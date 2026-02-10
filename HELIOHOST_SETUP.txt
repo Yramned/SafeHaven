@@ -1,0 +1,187 @@
+===================================================================
+SAFEHAVEN - HELIOHOST DEPLOYMENT GUIDE
+===================================================================
+
+STEP-BY-STEP INSTRUCTIONS FOR DEPLOYING TO HELIOHOST
+
+-------------------------------------------------------------------
+STEP 1: UPDATE CONFIGURATION
+-------------------------------------------------------------------
+1. Open: config/config.php
+2. Find line 25 (around line 25)
+3. Change:
+   FROM: define('BASE_URL', 'https://yourusername.helioho.st/');
+   TO:   define('BASE_URL', 'https://YOUR-ACTUAL-SITE.helioho.st/');
+   
+   Example: define('BASE_URL', 'https://safehaven.helioho.st/');
+
+4. Save the file
+
+-------------------------------------------------------------------
+STEP 2: PREPARE FILES FOR UPLOAD
+-------------------------------------------------------------------
+Make sure you have ALL these folders:
+✓ assets/
+✓ config/
+✓ controllers/
+✓ models/
+✓ views/
+✓ storage/
+✓ index.php
+✓ README.md
+
+-------------------------------------------------------------------
+STEP 3: UPLOAD TO HELIOHOST
+-------------------------------------------------------------------
+
+METHOD A - Using cPanel File Manager:
+1. Log into HelioHost cPanel
+2. Open "File Manager"
+3. Navigate to "public_html" folder
+4. Click "Upload" button
+5. Select ALL your SafeHaven files
+6. Wait for upload to complete
+7. Refresh to verify all files are there
+
+METHOD B - Using FTP (FileZilla):
+1. Download FileZilla (filezilla-project.org)
+2. Connect to HelioHost:
+   - Host: ftp.yourdomain.helioho.st
+   - Username: Your cPanel username
+   - Password: Your cPanel password
+   - Port: 21
+3. Navigate to public_html/
+4. Drag and drop ALL SafeHaven files
+
+-------------------------------------------------------------------
+STEP 4: SET FOLDER PERMISSIONS
+-------------------------------------------------------------------
+In cPanel File Manager:
+1. Right-click the "storage" folder
+2. Select "Change Permissions"
+3. Check ALL boxes or enter: 777
+4. Click "Change Permissions" button
+
+Alternative: Check these boxes:
+☑ Read  ☑ Write  ☑ Execute (for User)
+☑ Read  ☑ Write  ☑ Execute (for Group)
+☑ Read  ☑ Write  ☑ Execute (for World)
+
+-------------------------------------------------------------------
+STEP 5: TEST YOUR SITE
+-------------------------------------------------------------------
+1. Open browser
+2. Visit: https://YOUR-SITE.helioho.st/
+3. You should see the landing page with:
+   - "Stay Safe. Stay Connected." hero section
+   - Floating status cards
+   - Key Features section
+   - How It Works section
+   - Contact form
+
+4. Test these pages:
+   ✓ Click "Get Started" (should go to register)
+   ✓ Click "How It Works" (should scroll down)
+   ✓ Fill out contact form and submit
+   ✓ Click Login and login with: admin@safehaven.com / password
+   ✓ After login, click "Evacuation Request"
+   ✓ After login, click "Situational Alerts"
+
+-------------------------------------------------------------------
+COMMON ISSUES & SOLUTIONS
+-------------------------------------------------------------------
+
+ISSUE: Blank white page
+SOLUTION: 
+- Check config/config.php has correct BASE_URL
+- View error log: storage/error.log (download via cPanel)
+- Enable error display temporarily (see below)
+
+ISSUE: CSS/Images not loading (plain HTML only)
+SOLUTION:
+- Verify BASE_URL in config/config.php ends with /
+- Correct: 'https://yoursite.helioho.st/'
+- Wrong: 'https://yoursite.helioho.st'
+- Clear browser cache (Ctrl+Shift+R)
+
+ISSUE: "Permission denied" when submitting forms
+SOLUTION:
+- Set storage/ folder to 777 permissions
+- Check all files uploaded correctly
+
+ISSUE: Page shows code instead of rendering
+SOLUTION:
+- Verify PHP is enabled on your HelioHost account
+- File must have .php extension (not .html)
+
+-------------------------------------------------------------------
+ENABLE ERROR DISPLAY (For Debugging Only)
+-------------------------------------------------------------------
+If you need to see errors temporarily:
+1. Open: config/config.php
+2. Find line 55 (around the "else" block for production)
+3. Temporarily change:
+   FROM: ini_set('display_errors', 0);
+   TO:   ini_set('display_errors', 1);
+4. Save and upload
+5. Refresh your site to see error messages
+6. REMEMBER TO CHANGE BACK AFTER FIXING!
+
+-------------------------------------------------------------------
+FILE CHECKLIST - Verify These Uploaded Correctly
+-------------------------------------------------------------------
+Critical Files:
+☑ index.php
+☑ config/config.php
+☑ config/database.php
+☑ controllers/AuthController.php
+☑ models/User.php
+☑ views/pages/home.php
+☑ views/pages/evacuation-request.php
+☑ views/pages/alerts.php
+☑ views/shared/header.php
+☑ views/shared/dashboard-header.php
+☑ views/shared/footer.php
+☑ assets/css/landing_page.css
+☑ assets/css/evacuation-request.css
+☑ assets/css/Heatmonitoring.css
+☑ assets/js/evacuation-request.js
+☑ storage/users.json
+☑ storage/messages.json
+
+-------------------------------------------------------------------
+URLS TO TEST AFTER DEPLOYMENT
+-------------------------------------------------------------------
+✓ https://yoursite.helioho.st/ (landing page)
+✓ https://yoursite.helioho.st/index.php?page=login
+✓ https://yoursite.helioho.st/index.php?page=register
+✓ https://yoursite.helioho.st/index.php?page=dashboard (after login)
+✓ https://yoursite.helioho.st/index.php?page=evacuation-request
+✓ https://yoursite.helioho.st/index.php?page=alerts
+
+-------------------------------------------------------------------
+FINAL VERIFICATION
+-------------------------------------------------------------------
+Your site is working correctly if:
+1. Landing page loads with beautiful design
+2. Navigation menu works
+3. Contact form saves messages
+4. Login redirects to dashboard
+5. Dashboard shows role-based modules
+6. Evacuation Request page loads without errors
+7. Alerts page loads without errors
+8. All CSS styling is visible
+9. No PHP errors displayed
+
+===================================================================
+NEED HELP?
+===================================================================
+- Check storage/error.log for PHP errors
+- Verify BASE_URL in config/config.php
+- Ensure storage/ folder has 777 permissions
+- Test on localhost first before deploying to HelioHost
+- Make sure you're using the latest version of files
+
+===================================================================
+                    DEPLOYMENT COMPLETE!
+===================================================================

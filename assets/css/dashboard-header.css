@@ -1,0 +1,170 @@
+ .dashboard-header {
+            --hd-bg: #1a2332;
+            --hd-blue: #3498db;
+            --hd-teal: #1abc9c;
+            --hd-text: #ecf0f1;
+            --hd-muted: #95a5a6;
+        }
+
+        .dashboard-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--hd-bg);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-header * {
+            box-sizing: border-box;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--hd-text);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--hd-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            color: #fff;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Navigation */
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--hd-muted);
+            text-decoration: none;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--hd-text);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-link.active {
+            color: var(--hd-blue);
+            background: rgba(52,152,219,0.12);
+        }
+
+        /* User section */
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-greeting {
+            font-size: 14px;
+            color: var(--hd-muted);
+        }
+
+        .user-greeting span {
+            color: var(--hd-blue);
+            font-weight: 600;
+        }
+
+        .header-logout {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #e74c3c;
+            text-decoration: none;
+            background: rgba(231,76,60,0.12);
+            border: 1px solid rgba(231,76,60,0.35);
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .header-logout:hover {
+            background: rgba(231,76,60,0.2);
+            border-color: #e74c3c;
+        }
+
+        /* Mobile */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--hd-text);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .header-nav {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--hd-bg);
+                flex-direction: column;
+                padding: 16px;
+                border-top: 1px solid rgba(255,255,255,0.08);
+            }
+
+            .header-nav.open {
+                display: flex;
+            }
+
+            .nav-link {
+                width: 100%;
+                padding: 12px 16px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .user-greeting {
+                display: none;
+            }
+        }
