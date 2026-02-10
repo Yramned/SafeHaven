@@ -72,6 +72,7 @@ class AuthController {
         $address = trim($_POST['address'] ?? '');
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
+        $role = $_POST['role'] ?? 'evacuee'; // Get role from form
         
         if (empty($fullName) || strlen($fullName) < 2) {
             $errors[] = 'Full name must be at least 2 characters';
@@ -99,6 +100,11 @@ class AuthController {
             $errors[] = 'Passwords do not match';
         }
         
+        // Validate role
+        if (!in_array($role, ['evacuee', 'admin'])) {
+            $errors[] = 'Invalid role selected';
+        }
+        
         if (!empty($errors)) {
             $_SESSION['register_errors'] = $errors;
             $_SESSION['register_old'] = $_POST;
@@ -113,7 +119,7 @@ class AuthController {
             'phone_number' => $phone,
             'address' => $address,
             'password' => $password,
-            'role' => 'evacuee' // Default role
+            'role' => $role // Save the selected role
         ];
         
         $user = UserModel::create($userData);

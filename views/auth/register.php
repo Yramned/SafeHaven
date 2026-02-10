@@ -46,9 +46,16 @@ $oldData = $_SESSION['register_old'] ?? [];
                 </div>
 
                 <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" required 
+                           placeholder="e.g. Brgy. Sta. Ana, Cebu"
+                           value="<?= htmlspecialchars($oldData['address'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" required 
-                           placeholder="Enter your email"
+                           placeholder="you@email.com"
                            value="<?= htmlspecialchars($oldData['email'] ?? '') ?>">
                 </div>
 
@@ -60,10 +67,33 @@ $oldData = $_SESSION['register_old'] ?? [];
                 </div>
 
                 <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" name="address" required 
-                           placeholder="Enter your address"
-                           value="<?= htmlspecialchars($oldData['address'] ?? '') ?>">
+                    <label>Register As</label>
+                    <div class="role-selection">
+                        <label class="role-option">
+                            <input type="radio" name="role" value="evacuee" 
+                                   <?= (!isset($oldData['role']) || $oldData['role'] === 'evacuee') ? 'checked' : '' ?> required>
+                            <div class="role-card">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                <span class="role-title">Evacuee</span>
+                                <span class="role-desc">Request evacuation assistance</span>
+                            </div>
+                        </label>
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="admin" 
+                                   <?= (isset($oldData['role']) && $oldData['role'] === 'admin') ? 'checked' : '' ?>>
+                            <div class="role-card">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                                <span class="role-title">Admin</span>
+                                <span class="role-desc">Manage evacuation centers</span>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -175,11 +205,78 @@ $oldData = $_SESSION['register_old'] ?? [];
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s;
+    box-sizing: border-box;
 }
 
 .form-group input:focus {
     outline: none;
     border-color: #667eea;
+}
+
+/* Role Selection Styles */
+.role-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.role-option {
+    cursor: pointer;
+}
+
+.role-option input[type="radio"] {
+    display: none;
+}
+
+.role-card {
+    background: rgba(102, 126, 234, 0.05);
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-height: 140px;
+    justify-content: center;
+}
+
+.role-card svg {
+    width: 32px;
+    height: 32px;
+    color: #667eea;
+    transition: all 0.3s ease;
+}
+
+.role-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+    display: block;
+}
+
+.role-desc {
+    font-size: 12px;
+    color: #666;
+    display: block;
+}
+
+.role-option input[type="radio"]:checked + .role-card {
+    background: rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.role-option input[type="radio"]:checked + .role-card svg {
+    color: #667eea;
+    transform: scale(1.1);
+}
+
+.role-option:hover .role-card {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
 }
 
 .btn-primary {
@@ -218,6 +315,16 @@ $oldData = $_SESSION['register_old'] ?? [];
 
 .auth-footer a:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 460px) {
+    .role-selection {
+        grid-template-columns: 1fr;
+    }
+    
+    .auth-box {
+        padding: 30px 20px;
+    }
 }
 </style>
 
