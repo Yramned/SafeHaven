@@ -1,0 +1,71 @@
+================================================================
+SAFEHAVEN MERGED - QUICK START GUIDE
+================================================================
+
+✅ WHAT'S INCLUDED:
+- Beautiful landing page from SafeHaven(3)
+- Fixed evacuation request page
+- Fixed situational alerts page  
+- Clean MVC structure
+- All visuals and styling preserved
+
+----------------------------------------------------------------
+🚀 LOCALHOST SETUP (3 STEPS)
+----------------------------------------------------------------
+1. Extract to: C:\xampp\htdocs\SafeHaven_Merged\
+2. Open browser: http://localhost/SafeHaven_Merged/
+3. Login: admin@safehaven.com / password
+
+Done! ✓
+
+----------------------------------------------------------------
+🌐 HELIOHOST SETUP (4 STEPS)
+----------------------------------------------------------------
+1. Edit config/config.php line 25 → Add your URL
+2. Upload ALL files to public_html/
+3. Set storage/ folder permissions to 777
+4. Visit: https://yoursite.helioho.st/
+
+Done! ✓
+
+----------------------------------------------------------------
+🔑 TEST ACCOUNTS
+----------------------------------------------------------------
+Admin:   admin@safehaven.com / password
+Evacuee: user@example.com / password
+
+----------------------------------------------------------------
+✓ PAGES TO TEST
+----------------------------------------------------------------
+Landing Page:        index.php (or just /)
+Login:               index.php?page=login
+Register:            index.php?page=register
+Dashboard:           index.php?page=dashboard
+Evacuation Request:  index.php?page=evacuation-request
+Alerts:              index.php?page=alerts
+Centers:             index.php?page=evacuation-centers
+
+----------------------------------------------------------------
+⚠️ COMMON ISSUES
+----------------------------------------------------------------
+Problem: Blank page
+Fix: Check BASE_URL in config/config.php
+
+Problem: No CSS
+Fix: Make sure BASE_URL ends with / slash
+
+Problem: Can't save data
+Fix: chmod 777 storage/ folder
+
+----------------------------------------------------------------
+📁 IMPORTANT FILES
+----------------------------------------------------------------
+config/config.php              ← UPDATE BASE_URL HERE
+views/pages/home.php           ← Landing page
+views/pages/evacuation-request.php  ← Evacuation form
+views/pages/alerts.php         ← Situational alerts
+storage/                       ← Must be writable (777)
+
+================================================================
+Ready! Just extract and open in browser 🎉
+================================================================
