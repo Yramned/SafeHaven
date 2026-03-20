@@ -1,0 +1,341 @@
+/* ═══════════════════════════════════════════════════
+   SafeHaven – Capacity Management
+   ═══════════════════════════════════════════════════ */
+
+/* ── Page ─────────────────────────────────────────── */
+.cap-page {
+  max-width: 1200px;
+  margin: 28px auto;
+  padding: 0 16px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Stat cards ───────────────────────────────────── */
+.cap-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.cap-stat-card {
+  background: #1e2d3d;
+  border: 1px solid #2e4057;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.cap-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.cap-icon-purple { background: #4c1d95; }
+.cap-icon-green  { background: #065f46; }
+.cap-icon-blue   { background: #1e3a5f; }
+.cap-icon-pink   { background: #831843; }
+
+.cap-stat-body  { flex: 1; min-width: 0; }
+.cap-stat-label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+.cap-stat-val   { font-size: 28px; font-weight: 800; color: #f1f5f9; line-height: 1.1; margin-bottom: 6px; }
+.cap-stat-sub   { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+
+.cap-prog-track { background: #2e4057; height: 5px; border-radius: 3px; overflow: hidden; margin: 7px 0 5px; }
+.cap-prog-fill  { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 3px; }
+
+.cap-dot        { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.cap-dot-green  { background: #34d399; }
+.cap-dot-yellow { background: #fbbf24; }
+.cap-dot-red    { background: #f87171; }
+
+/* ── Card shell ───────────────────────────────────── */
+.cap-card {
+  background: #1e2d3d;
+  border: 1px solid #2e4057;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+.cap-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid #2e4057;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cap-card-head-left h2 { font-size: 16px; font-weight: 700; color: #f1f5f9; margin: 0 0 2px; }
+.cap-card-sub          { font-size: 12px; color: #64748b; margin: 0; }
+
+/* ── Buttons ──────────────────────────────────────── */
+.cap-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all .18s;
+  white-space: nowrap;
+}
+.cap-btn:disabled { opacity: .5; cursor: default; }
+
+.cap-btn-ghost   { background: #243447; border: 1px solid #2e4057; color: #94a3b8; }
+.cap-btn-ghost:hover { background: #2e4057; color: #f1f5f9; }
+
+.cap-btn-save    { background: #0d9488; color: #fff; }
+.cap-btn-save:hover { background: #0f766e; }
+
+.cap-btn-approve { background: #065f46; color: #6ee7b7; }
+.cap-btn-approve:hover { background: #047857; }
+
+.cap-btn-deny    { background: #7f1d1d; color: #fca5a5; }
+.cap-btn-deny:hover { background: #991b1b; }
+
+.cap-btn-delete  { background: #1e293b; border: 1px solid #334155; color: #94a3b8; }
+.cap-btn-delete:hover { background: #7f1d1d; border-color: #dc2626; color: #fca5a5; }
+
+.cap-btn-xs { padding: 4px 9px; font-size: 13px; border-radius: 6px; }
+
+/* ── Badges ───────────────────────────────────────── */
+.cap-badge        { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+.cap-badge-green  { background: #065f46; color: #6ee7b7; }
+.cap-badge-yellow { background: #78350f; color: #fcd34d; }
+.cap-badge-red    { background: #7f1d1d; color: #fca5a5; }
+.cap-badge-blue   { background: #1e3a5f; color: #93c5fd; }
+
+/* ── Evacuation Center Cards ──────────────────────── */
+.ec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 18px;
+}
+.ec-card {
+  background: #162130;
+  border: 1px solid #2e4057;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ec-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ec-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.3;
+  flex: 1;
+}
+.ec-numbers {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ec-num-block { text-align: center; }
+.ec-big       { font-size: 32px; font-weight: 800; color: #f1f5f9; line-height: 1; }
+.ec-big-cap   { color: #94a3b8; font-size: 26px; }
+.ec-big-avail { color: #34d399; font-size: 26px; }
+.ec-lbl       { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
+.ec-divider   { font-size: 28px; color: #334155; font-weight: 300; align-self: flex-start; padding-top: 4px; }
+.ec-avail-block {
+  margin-left: auto;
+  background: rgba(52,211,153,.08);
+  border: 1px solid rgba(52,211,153,.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+.ec-update-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #2e4057;
+}
+.ec-update-lbl { font-size: 12px; color: #64748b; white-space: nowrap; }
+.ec-input {
+  width: 64px;
+  padding: 7px 10px;
+  background: #1e2d3d;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  color: #f1f5f9;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color .2s;
+}
+.ec-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.2); }
+.ec-save-btn   { margin-left: auto; padding: 7px 18px; font-size: 13px; }
+
+/* ── Tables ───────────────────────────────────────── */
+.cap-table-wrap { overflow-x: auto; }
+.cap-table      { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cap-table thead tr   { background: #162130; }
+.cap-table th         { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .05em; border-bottom: 2px solid #2e4057; white-space: nowrap; }
+.cap-table td         { padding: 12px 14px; color: #cbd5e1; border-bottom: 1px solid #243447; vertical-align: middle; }
+.cap-table tbody tr:last-child td { border-bottom: none; }
+.cap-table tbody tr:hover         { background: #243447; }
+
+.cap-name-cell { font-weight: 600; color: #f1f5f9; }
+.cap-code      { font-family: monospace; font-size: 12px; color: #818cf8; }
+.cap-muted     { color: #64748b; }
+.cap-date      { font-size: 12px; }
+
+/* ── Inline edit (tables) ─────────────────────────── */
+.cap-inline-edit { display: flex; align-items: center; gap: 7px; }
+.cap-num-input   { width: 68px; padding: 6px 9px; background: #131f2e; border: 1px solid #2e4057; border-radius: 6px; color: #f1f5f9; font-size: 13px; }
+.cap-num-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.2); }
+
+/* ── Action group ─────────────────────────────────── */
+.cap-action-group { display: flex; align-items: center; gap: 5px; }
+
+/* ── Mobile request cards ─────────────────────────── */
+.cap-cards        { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.cap-req-card     { background: #162130; border: 1px solid #2e4057; border-radius: 10px; padding: 14px; }
+.cap-req-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.cap-req-name     { font-weight: 700; color: #f1f5f9; font-size: 14px; }
+.cap-req-meta     { display: grid; grid-template-columns: auto 1fr; gap: 5px 10px; margin-bottom: 12px; font-size: 13px; align-items: center; }
+.cap-meta-lbl     { color: #64748b; font-size: 11px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+.cap-req-card-btns { display: flex; gap: 7px; flex-wrap: wrap; }
+
+/* ── Empty state ──────────────────────────────────── */
+.cap-empty      { text-align: center; padding: 44px 20px; }
+.cap-empty-icon { font-size: 46px; opacity: .4; margin-bottom: 10px; }
+.cap-empty p    { color: #64748b; font-size: 14px; margin: 0; }
+
+/* ── Delete modal ─────────────────────────────────── */
+.cap-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 9000; align-items: center; justify-content: center; }
+.cap-modal-bg.cap-modal-open { display: flex; }
+.cap-modal    { background: #1e2d3d; border: 1px solid #334155; border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.6); animation: capModalIn .25s ease; }
+@keyframes capModalIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+.cap-modal-icon   { font-size: 42px; margin-bottom: 12px; }
+.cap-modal h3     { color: #f1f5f9; font-size: 18px; margin: 0 0 8px; }
+.cap-modal p      { color: #94a3b8; font-size: 14px; margin: 0 0 22px; line-height: 1.5; }
+.cap-modal-btns   { display: flex; gap: 10px; justify-content: center; }
+.cap-btn-del-confirm       { background: #dc2626; color: #fff; padding: 9px 22px; font-size: 14px; }
+.cap-btn-del-confirm:hover { background: #b91c1c; }
+
+/* ── Toast ────────────────────────────────────────── */
+.cap-toast      { position: fixed; bottom: 26px; right: 26px; background: #1e293b; border: 1px solid #334155; color: #f1f5f9; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; opacity: 0; transform: translateY(14px); transition: all .28s cubic-bezier(.34,1.56,.64,1); z-index: 9999; pointer-events: none; min-width: 190px; max-width: 340px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+.cap-toast-show { opacity: 1; transform: translateY(0); }
+.cap-toast-err  { background: #7f1d1d; border-color: #dc2626; color: #fecaca; }
+
+/* ── Responsive ───────────────────────────────────── */
+.cap-desktop-only { display: block; }
+.cap-mobile-only  { display: none; }
+
+@media (max-width: 1024px) {
+  .cap-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .cap-hide-sm { display: none; }
+  .cap-page    { margin: 14px auto; padding: 0 10px 40px; gap: 14px; }
+  .cap-stat-val { font-size: 22px; }
+  .cap-card-head { padding: 13px 14px; }
+  .cap-table th, .cap-table td { padding: 9px 11px; }
+  .cap-num-input { width: 56px; }
+  .ec-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+@media (max-width: 640px) {
+  .cap-desktop-only { display: none; }
+  .cap-mobile-only  { display: flex; flex-direction: column; }
+  .cap-stats { grid-template-columns: 1fr 1fr; }
+  .cap-toast { bottom: 14px; right: 10px; left: 10px; min-width: unset; }
+  .ec-grid   { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+}
+@media (max-width: 400px) {
+  .cap-stats { grid-template-columns: 1fr; }
+}
+/* ─── Center management additions ─────────────────── */
+.ec-center-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    justify-content: flex-end;
+}
+
+.cap-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.cap-form-group { display: flex; flex-direction: column; gap: 4px; }
+.cap-form-group.cap-span-2 { grid-column: span 2; }
+.cap-form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.cap-form-input {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--white);
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+.cap-form-input::placeholder { color: var(--text-muted); }
+.cap-form-input:focus { border-color: var(--blue); }
+
+@media (max-width: 500px) {
+    .cap-form-grid { grid-template-columns: 1fr; }
+    .cap-form-group.cap-span-2 { grid-column: span 1; }
+}
+
+/* ── Beds button ──────────────────────────────────── */
+.cap-btn-beds { background: #7c3aed; color: #fff; border: none; }
+.cap-btn-beds:hover { background: #6d28d9; }
+
+/* ── SVG icons in headings/buttons ───────────────── */
+.cap-icon-svg {
+  width: 18px; height: 18px;
+  vertical-align: middle;
+  margin-right: 6px;
+  stroke: #6366f1;
+  flex-shrink: 0;
+}
+.cap-card-head-left h2 {
+  display: flex;
+  align-items: center;
+}
+.cap-btn svg {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.cap-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* ── People count cell ────────────────────────────── */
+.cap-people-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #94a3b8;
+}
+.cap-people-count svg { stroke: #6366f1; }

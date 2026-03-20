@@ -1,0 +1,23 @@
+# SafeHaven - Apache Configuration
+# Works on both localhost (XAMPP/WAMP) and HelioHost
+
+Options -Indexes
+DirectoryIndex index.php
+
+# Redirect all traffic through index.php (optional - not strictly needed since routing uses ?page=)
+# Uncomment below only if you switch to pretty URLs:
+# RewriteEngine On
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^ index.php [QSA,L]
+
+# Security: protect sensitive directories
+<FilesMatch "\.(sql|log|json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "^(config|models|controllers|storage)/">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
