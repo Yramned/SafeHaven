@@ -1,7 +1,7 @@
 <?php
 /**
  * SafeHaven - Main Configuration File
- * Auto-detects environment (localhost vs HelioHost)dadwd
+ * Auto-detects environment (localhost vs HelioHost)dadwdfsefse
  */
 
 // Detect environment
