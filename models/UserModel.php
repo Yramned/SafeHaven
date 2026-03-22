@@ -85,6 +85,12 @@ class UserModel {
             $updates[] = "role = ?";
             $params[] = $data['role'];
         }
+        if (array_key_exists('family_numbers', $data)) {
+            $updates[] = "family_numbers = ?";
+            $params[] = is_array($data['family_numbers'])
+                ? json_encode(array_values(array_filter($data['family_numbers'])))
+                : $data['family_numbers'];
+        }
         
         if (empty($updates)) {
             return false;
@@ -120,6 +126,24 @@ class UserModel {
         return $stmt->fetchAll();
     }
     
+    /** Auto-add family_numbers column if missing (safe to call repeatedly) */
+    public static function ensureSchema() {
+        $db = self::getDB();
+        try {
+            $db->exec("ALTER TABLE `users` ADD COLUMN `family_numbers` TEXT DEFAULT NULL AFTER `role`");
+        } catch (PDOException $e) {
+            // Column already exists – ignore
+        }
+    }
+
+    /** Return all evacuees (role = evacuee) with their family_numbers */
+    public static function getAllEvacuees(): array {
+        $db = self::getDB();
+        $stmt = $db->prepare("SELECT * FROM users WHERE role = 'evacuee' ORDER BY created_at DESC");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public static function count() {
         $db = self::getDB();
         $stmt = $db->query("SELECT COUNT(*) as total FROM users");

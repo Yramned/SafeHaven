@@ -82,10 +82,12 @@ foreach ($defaultSensors as $k => $def) {
 <div class="sh-flash sh-flash-<?= htmlspecialchars($alertFlash['type']) ?>">
     <?php if ($alertFlash['type']==='success'): ?>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+    <?= htmlspecialchars($alertFlash['msg']) ?>
+    <span style="margin-left:10px;font-size:11px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#4ade80;padding:2px 8px;border-radius:20px;font-weight:600;">📱 SMS sent to all users</span>
     <?php else: ?>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    <?php endif; ?>
     <?= htmlspecialchars($alertFlash['msg']) ?>
+    <?php endif; ?>
 </div>
 <?php endif; ?>
 

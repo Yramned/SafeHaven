@@ -387,3 +387,109 @@
         justify-content: center;
     }
 }
+/* ─── PhilSMS integration additions ─────────────────────────────────────── */
+.sms-badge {
+    display: inline-block;
+    font-size: 10px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.sms-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(34,197,94,0.07);
+    border: 1px solid rgba(34,197,94,0.22);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 16px;
+}
+.sms-info-icon { font-size: 22px; flex-shrink: 0; }
+.sms-info-text { font-size: 12.5px; line-height: 1.5; color: var(--text-secondary, #888); }
+.sms-info-text strong { color: var(--text-primary, #e2e8f0); display: block; margin-bottom: 3px; }
+
+.family-numbers-section {
+    margin-top: 22px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 18px;
+    background: rgba(255,255,255,0.02);
+}
+.family-section-header { margin-bottom: 14px; }
+.family-header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.family-header-left svg { margin-top: 3px; flex-shrink: 0; stroke: #60a5fa; }
+.family-header-left h4 { margin: 0 0 2px; font-size: 14px; font-weight: 600; color: var(--text-primary, #e2e8f0); }
+.family-header-left p  { margin: 0; font-size: 12px; color: var(--text-secondary, #94a3b8); }
+
+.family-number-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    transition: opacity .25s, transform .25s;
+}
+.family-number-icon { font-size: 16px; flex-shrink: 0; }
+.family-number-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text-primary, #e2e8f0);
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color .2s;
+}
+.family-number-input:not([readonly]):focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96,165,250,0.15); }
+.family-number-input[readonly]  { opacity: 0.72; cursor: default; }
+
+.btn-remove-family {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.28);
+    color: #f87171;
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+.btn-remove-family:hover { background: rgba(239,68,68,0.22); }
+
+.btn-add-family {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: rgba(96,165,250,0.08);
+    border: 1px dashed rgba(96,165,250,0.38);
+    color: #60a5fa;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+    margin-top: 6px;
+    transition: background .15s;
+}
+.btn-add-family:hover { background: rgba(96,165,250,0.16); }
+
+.family-empty-state {
+    text-align: center;
+    padding: 18px;
+    color: var(--text-secondary, #94a3b8);
+    font-size: 13px;
+}
+.family-empty-state span { font-size: 28px; display: block; margin-bottom: 6px; }

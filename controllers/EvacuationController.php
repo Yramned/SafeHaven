@@ -120,6 +120,38 @@ class EvacuationController {
             // Save to DB (create() auto-detects which columns exist)
             $request = EvacuationModel::create($requestData);
 
+            // ── Send SMS confirmation to the user ────────────────────────────
+            try {
+                require_once ROOT_PATH . 'services/PhilSmsService.php';
+                require_once MODEL_PATH . 'UserModel.php';
+                $userRow = UserModel::getById($_SESSION['user_id']);
+                $primaryPhone = trim($userRow['phone_number'] ?? '');
+
+                // Collect recipients: user + family members
+                $recipients = [];
+                if ($primaryPhone) {
+                    $recipients[] = PhilSmsService::formatNumber($primaryPhone);
+                }
+                $familyJson = $userRow['family_numbers'] ?? '';
+                if ($familyJson) {
+                    $familyNums = json_decode($familyJson, true);
+                    if (is_array($familyNums)) {
+                        foreach ($familyNums as $fn) {
+                            $fn = trim($fn);
+                            if ($fn) $recipients[] = PhilSmsService::formatNumber($fn);
+                        }
+                    }
+                }
+
+                if (!empty($recipients) && $request) {
+                    $smsText = PhilSmsService::buildEvacuationMessage($request, $center);
+                    PhilSmsService::send(array_unique($recipients), $smsText);
+                }
+            } catch (Exception $smsEx) {
+                error_log('[PhilSMS] Evacuation submit error: ' . $smsEx->getMessage());
+            }
+            // ─────────────────────────────────────────────────────────────────
+
             // Do NOT increment occupancy here — admin must approve first
             $updatedCenter = EvacuationCenterModel::getById($center['id']);
             $requestId = $request['id'] ?? 'N/A';

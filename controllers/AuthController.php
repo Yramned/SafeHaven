@@ -98,6 +98,9 @@ class AuthController {
             exit;
         }
 
+        // Ensure family_numbers column exists (safe auto-migration)
+        UserModel::ensureSchema();
+
         $user = UserModel::create([
             'full_name'    => $fullName,
             'email'        => $email,

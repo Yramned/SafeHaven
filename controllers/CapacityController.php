@@ -171,6 +171,40 @@ class CapacityController {
 
             EvacuationModel::updateStatus($requestId, $action);
 
+            // ── Send SMS on approval ─────────────────────────────────────────
+            if ($action === 'approved') {
+                try {
+                    require_once ROOT_PATH . 'services/PhilSmsService.php';
+                    require_once MODEL_PATH . 'UserModel.php';
+                    $userRow = UserModel::getById($req['user_id']);
+                    $primaryPhone = trim($userRow['phone_number'] ?? '');
+
+                    $recipients = [];
+                    if ($primaryPhone) {
+                        $recipients[] = PhilSmsService::formatNumber($primaryPhone);
+                    }
+                    $familyJson = $userRow['family_numbers'] ?? '';
+                    if ($familyJson) {
+                        $familyNums = json_decode($familyJson, true);
+                        if (is_array($familyNums)) {
+                            foreach ($familyNums as $fn) {
+                                $fn = trim($fn);
+                                if ($fn) $recipients[] = PhilSmsService::formatNumber($fn);
+                            }
+                        }
+                    }
+
+                    if (!empty($recipients)) {
+                        $centerRow = EvacuationCenterModel::getById($req['center_id']);
+                        $smsText   = PhilSmsService::buildApprovalMessage($req, $centerRow ?: []);
+                        PhilSmsService::send(array_unique($recipients), $smsText);
+                    }
+                } catch (Exception $smsEx) {
+                    error_log('[PhilSMS] Approval SMS error: ' . $smsEx->getMessage());
+                }
+            }
+            // ─────────────────────────────────────────────────────────────────
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Request ' . $action,

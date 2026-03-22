@@ -299,6 +299,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.center.latitude) btnDir.setAttribute('data-lat', data.center.latitude);
             if (data.center.longitude) btnDir.setAttribute('data-lng', data.center.longitude);
         }
+
+        // ── SMS notification badge ────────────────────────────────────────
+        const smsNotice = document.getElementById('smsSentNotice');
+        if (smsNotice) {
+            smsNotice.style.display = 'flex';
+        }
     }
     
     function capitalizeFirst(str) {

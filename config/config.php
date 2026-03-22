@@ -1,6 +1,7 @@
 <?php
 /**
- * Jerome BFF mathew heart heart
+ * SafeHaven - Main Configuration File
+ * Auto-detects environment (localhost vs HelioHost)
  */
 
 // Detect environment
@@ -15,11 +16,11 @@ define('IS_LOCAL', $isLocal);
 
 // Base URL Configuration
 if ($isLocal) {
-    // For localhost - adjust this if your project is in a subfolderugwda
+    // For localhost - adjust this if your project is in a subfolder
     define('BASE_URL', 'http://localhost/safehaven/');
 } else {
     // For HelioHost - your project is in the root
-    define('BASE_URL', 'https://safehaven.helioho.st/');
+    define('BASE_URL', 'https://safeheaven.helioho.st/');
 }
 
 // Site Configuration
@@ -32,6 +33,9 @@ define('CONTACT_EMAIL', 'safehaven@support.com');
 define('CONTACT_ADDRESS', 'Cebu City, Philippines');
 define('CONTACT_WEBSITE', 'www.safehaven.com');
 
+// PhilSMS API
+define('PHILSMS_TOKEN', '1921|mmCNh0q3Dbpi7pUb9pvlteVWMLoRsDlgbawgNtBAf861eeb3');
+
 // Path Constants
 define('ROOT_PATH', dirname(__DIR__) . '/');
 define('CONFIG_PATH', ROOT_PATH . 'config/');
@@ -39,6 +43,7 @@ define('CONTROLLER_PATH', ROOT_PATH . 'controllers/');
 define('MODEL_PATH', ROOT_PATH . 'models/');
 define('VIEW_PATH', ROOT_PATH . 'views/');
 define('STORAGE_PATH', ROOT_PATH . 'storage/');
+define('SERVICES_PATH', ROOT_PATH . 'services/');
 define('ASSET_PATH', BASE_URL . 'assets/');
 define('CSS_PATH', ASSET_PATH . 'css/');
 define('JS_PATH', ASSET_PATH . 'js/');

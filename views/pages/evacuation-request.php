@@ -102,6 +102,15 @@
         <h2>Request Sent Successfully!</h2>
         <p>Your evacuation request is <strong>pending admin approval</strong></p>
         <p class="sub-note">You will be notified once approved. Keep your confirmation code safe.</p>
+
+        <!-- SMS notification notice -->
+        <div id="smsSentNotice" style="display:none;align-items:center;gap:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:10px 16px;margin-top:12px;font-size:13px;color:#4ade80;text-align:left;">
+            <span style="font-size:20px;">📱</span>
+            <div>
+                <strong style="display:block;margin-bottom:2px;">SMS Confirmation Sent</strong>
+                <span style="color:#86efac;font-size:12px;">Your confirmation code and center details have been sent to your registered phone number.</span>
+            </div>
+        </div>
     </div>
 
     <!-- Assigned evacuation center -->

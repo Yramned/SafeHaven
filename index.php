@@ -233,6 +233,24 @@ switch ($page) {
         SensorController::reset();
         break;
 
+    // ── SMS TEST (admin only, debug) ─────────────────────────────────────
+    case 'test-sms':
+        if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'admin') {
+            echo 'Unauthorized'; exit;
+        }
+        require_once ROOT_PATH . 'services/PhilSmsService.php';
+        require_once MODEL_PATH . 'UserModel.php';
+        $testUser = UserModel::getById($_SESSION['user_id']);
+        $testNumber = PhilSmsService::formatNumber($testUser['phone_number'] ?? '');
+        $result = PhilSmsService::send($testNumber, '[SafeHaven] Test SMS - if you receive this, PhilSMS is working correctly!');
+        header('Content-Type: application/json');
+        echo json_encode([
+            'raw_phone'       => $testUser['phone_number'] ?? 'NOT SET',
+            'formatted_phone' => $testNumber,
+            'result'          => $result,
+        ], JSON_PRETTY_PRINT);
+        exit;
+
     // ── 404 ─────────────────────────────────────────────────────────────────
     default:
         http_response_code(404);

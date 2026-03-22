@@ -51,10 +51,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="phone_number">Phone Number</label>
+                    <label for="phone_number">Phone Number <span style="font-size:10px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:1px 6px;border-radius:20px;margin-left:4px;font-weight:600;">📱 SMS</span></label>
                     <input type="tel" id="phone_number" name="phone_number" required
-                           placeholder="Enter your phone number"
+                           placeholder="e.g. 09171234567"
                            value="<?= htmlspecialchars($oldData['phone_number'] ?? '') ?>">
+                    <small style="color:#94a3b8;font-size:11px;display:block;margin-top:3px;">You'll receive evacuation confirmations &amp; alerts via SMS</small>
                 </div>
 
                 <div class="form-group">

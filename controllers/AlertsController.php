@@ -6,6 +6,7 @@
 
 require_once MODEL_PATH . 'AlertModel.php';
 require_once MODEL_PATH . 'SensorDataModel.php';
+require_once MODEL_PATH . 'UserModel.php';
 
 class AlertsController {
 
@@ -75,6 +76,23 @@ class AlertsController {
                     'location'   => $location ?: null,
                     'created_by' => $_SESSION['user_id'],
                 ]);
+
+                // ── Send SMS to all evacuees + their family numbers ──────────
+                if ($id) {
+                    try {
+                        require_once ROOT_PATH . 'services/PhilSmsService.php';
+                        $alertRow  = AlertModel::getById($id);
+                        $allUsers  = UserModel::getAllEvacuees();
+                        $numbers   = PhilSmsService::collectAlertNumbers($allUsers);
+                        if (!empty($numbers)) {
+                            $smsText = PhilSmsService::buildAlertMessage($alertRow);
+                            PhilSmsService::send($numbers, $smsText);
+                        }
+                    } catch (Exception $smsEx) {
+                        error_log('[PhilSMS] Alert broadcast error: ' . $smsEx->getMessage());
+                    }
+                }
+                // ─────────────────────────────────────────────────────────────
 
                 $_SESSION['alert_flash'] = $id
                     ? ['type'=>'success','msg'=>'Alert broadcast successfully.']

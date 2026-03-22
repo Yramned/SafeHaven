@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `address` text NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('evacuee','admin') DEFAULT 'evacuee',
+  `family_numbers` text DEFAULT NULL COMMENT 'JSON array of family member phone numbers',
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
@@ -228,3 +229,20 @@ INSERT IGNORE INTO `sensor_readings` (`sensor_key`,`label`,`value`,`unit`,`trend
 ('flood_level','Flood Level','2.8','m','↑ 0.4 m – rising','warn','🌊');
 
 COMMIT;
+
+-- --------------------------------------------------------
+-- Migration: add family_numbers to users (safe – IF NOT EXISTS via ALTER IGNORE)
+-- --------------------------------------------------------
+SET @col_exists = (
+  SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME   = 'users'
+    AND COLUMN_NAME  = 'family_numbers'
+);
+SET @sql = IF(@col_exists = 0,
+  'ALTER TABLE `users` ADD COLUMN `family_numbers` TEXT DEFAULT NULL COMMENT ''JSON array of family member phone numbers'' AFTER `role`',
+  'SELECT 1'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;

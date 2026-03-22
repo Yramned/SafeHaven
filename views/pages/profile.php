@@ -1,7 +1,7 @@
 <?php
 /**
  * SafeHaven - Profile View
- * Pure view: all variables ($user, $successMessage, $errorMessages) provided by ProfileController.
+ * Variables: $user, $successMessage, $errorMessages — from ProfileController
  */
 ?>
 
@@ -20,7 +20,7 @@
             </div>
             <div>
                 <h2>My Profile</h2>
-                <p>Manage your account information</p>
+                <p>Manage your account information &amp; SMS notifications</p>
             </div>
         </div>
     </div>
@@ -86,6 +86,19 @@
                     <span class="meta-label">User ID</span>
                     <span class="meta-value">#<?= str_pad($user['id'], 4, '0', STR_PAD_LEFT) ?></span>
                 </div>
+                <div class="meta-item">
+                    <span class="meta-label">SMS Notifications</span>
+                    <span class="status-badge-active">&#9679; Enabled</span>
+                </div>
+            </div>
+
+            <!-- SMS Info Box -->
+            <div class="sms-info-box">
+                <div class="sms-info-icon">📱</div>
+                <div class="sms-info-text">
+                    <strong>SMS Alerts Active</strong>
+                    <p>You will receive evacuation confirmations and situational alerts via SMS to your registered number<?= !empty($user['family_numbers']) ? ' and ' . count($user['family_numbers']) . ' family number(s)' : '' ?>.</p>
+                </div>
             </div>
         </div>
 
@@ -104,6 +117,8 @@
                 </div>
 
                 <form id="profileForm" method="POST" action="<?= BASE_URL ?>index.php?page=profile-update">
+                    <!-- Hidden field to carry family numbers as JSON -->
+                    <input type="hidden" id="family_numbers_input" name="family_numbers" value="<?= htmlspecialchars(json_encode($user['family_numbers'])) ?>">
 
                     <div class="form-group">
                         <label for="name">Full Name</label>
@@ -120,10 +135,15 @@
                                    readonly required autocomplete="email">
                         </div>
                         <div class="form-group">
-                            <label for="phone">Phone Number</label>
+                            <label for="phone">
+                                Phone Number
+                                <span class="sms-badge">📱 SMS</span>
+                            </label>
                             <input type="tel" id="phone" name="phone"
                                    value="<?= htmlspecialchars($user['phone']) ?>"
-                                   readonly required autocomplete="tel">
+                                   readonly required autocomplete="tel"
+                                   placeholder="e.g. 09171234567">
+                            <span class="field-hint">Used for evacuation & alert SMS notifications</span>
                         </div>
                     </div>
 
@@ -142,6 +162,57 @@
                         <span class="field-hint">Minimum 6 characters</span>
                     </div>
 
+                    <!-- ── Family SMS Numbers ─────────────────────────────── -->
+                    <div class="family-numbers-section" id="familyNumbersSection">
+                        <div class="family-section-header">
+                            <div class="family-header-left">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <div>
+                                    <h4>Family SMS Notifications</h4>
+                                    <p>Add family members' numbers to notify them of evacuation alerts</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="familyNumbersList">
+                            <?php foreach ($user['family_numbers'] as $i => $fn): ?>
+                            <div class="family-number-row" data-index="<?= $i ?>">
+                                <div class="family-number-icon">👤</div>
+                                <input type="tel" class="family-number-input"
+                                       value="<?= htmlspecialchars($fn) ?>"
+                                       placeholder="e.g. 09171234567"
+                                       readonly
+                                       data-index="<?= $i ?>">
+                                <button type="button" class="btn-remove-family" onclick="removeFamilyNumber(<?= $i ?>)" style="display:none;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <button type="button" class="btn-add-family" id="addFamilyBtn" onclick="addFamilyNumber()" style="display:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Family Member Number
+                        </button>
+
+                        <?php if (empty($user['family_numbers'])): ?>
+                        <div class="family-empty-state" id="familyEmptyState">
+                            <span>📵</span>
+                            <p>No family numbers added yet. Click <strong>Edit Profile</strong> to add them.</p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <!-- ─────────────────────────────────────────────────────── -->
+
                     <div class="form-actions" id="formActions" style="display:none;">
                         <button type="button" class="btn-cancel" id="cancelBtn" onclick="cancelEdit()">&#10005; Cancel</button>
                         <button type="submit" class="btn-save">&#10003; Save Changes</button>
@@ -155,3 +226,112 @@
 </div><!-- /.profile-container -->
 </main>
 </div>
+
+<style>
+/* ── SMS badge ── */
+.sms-badge {
+    display: inline-block;
+    font-size: 10px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 20px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ── SMS info box in profile card ── */
+.sms-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 16px;
+}
+.sms-info-icon { font-size: 22px; flex-shrink: 0; }
+.sms-info-text { font-size: 12.5px; line-height: 1.5; color: var(--text-secondary, #888); }
+.sms-info-text strong { color: var(--text-primary, #fff); display: block; margin-bottom: 3px; }
+
+/* ── Family numbers section ── */
+.family-numbers-section {
+    margin-top: 22px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 18px;
+    background: rgba(255,255,255,0.02);
+}
+.family-section-header { margin-bottom: 14px; }
+.family-header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.family-header-left svg { margin-top: 2px; flex-shrink: 0; stroke: #60a5fa; }
+.family-header-left h4 { margin: 0 0 2px; font-size: 14px; font-weight: 600; color: var(--text-primary, #fff); }
+.family-header-left p { margin: 0; font-size: 12px; color: var(--text-secondary, #999); }
+
+.family-number-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.family-number-icon { font-size: 16px; flex-shrink: 0; }
+.family-number-input {
+    flex: 1;
+    background: var(--input-bg, rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text-primary, #fff);
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color .2s;
+}
+.family-number-input:not([readonly]):focus { border-color: #60a5fa; }
+.family-number-input[readonly] { opacity: 0.75; cursor: default; }
+
+.btn-remove-family {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #f87171;
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background .15s;
+}
+.btn-remove-family:hover { background: rgba(239,68,68,0.25); }
+
+.btn-add-family {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(96,165,250,0.1);
+    border: 1px dashed rgba(96,165,250,0.4);
+    color: #60a5fa;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+    transition: background .15s;
+}
+.btn-add-family:hover { background: rgba(96,165,250,0.18); }
+
+.family-empty-state {
+    text-align: center;
+    padding: 18px;
+    color: var(--text-secondary, #888);
+    font-size: 13px;
+}
+.family-empty-state span { font-size: 28px; display: block; margin-bottom: 6px; }
+</style>

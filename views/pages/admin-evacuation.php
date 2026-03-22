@@ -88,7 +88,7 @@ function aeShStCls($s) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Pending Evacuation Requests
         </h3>
-        <span class="sh-card-sub">Approve or deny each request below</span>
+        <span class="sh-card-sub">Approve or deny each request below &nbsp;·&nbsp; <span style="color:#4ade80;font-size:11px;">📱 Approval SMS sent automatically</span></span>
       </div>
       <span class="sh-badge sh-badge-yellow"><?= count($pendingRequests) ?> pending</span>
     </div>
