@@ -15,7 +15,7 @@ define('IS_LOCAL', $isLocal);
 
 // Base URL Configuration
 if ($isLocal) {
-    // For localhost - adjust this if your project is in a subfolderug
+    // For localhost - adjust this if your project is in a subfolderugwda
     define('BASE_URL', 'http://localhost/safehaven/');
 } else {
     // For HelioHost - your project is in the root
