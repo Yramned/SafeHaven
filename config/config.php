@@ -20,7 +20,7 @@ if ($isLocal) {
     define('BASE_URL', 'http://localhost/safehaven/');
 } else {
     // For HelioHost - your project is in the root
-    define('BASE_URL', 'https://safeheaven.helioho.st/');
+    define('BASE_URL', 'https://safehaven.helioho.st/');
 }
 
 // Site Configuration
