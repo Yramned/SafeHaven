@@ -233,6 +233,12 @@ switch ($page) {
         SensorController::reset();
         break;
 
+    // ── DRRM INCIDENT REPORT (admin only) ────────────────────────────────
+    case 'drrm-report':
+        require_once CONTROLLER_PATH . 'ReportController.php';
+        // ReportController.php outputs PDF directly and calls exit
+        break;
+
     // ── SMS TEST (admin only, debug) ─────────────────────────────────────
     case 'test-sms':
         if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'admin') {

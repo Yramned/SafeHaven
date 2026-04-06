@@ -388,3 +388,29 @@
     font-size: 0.9rem;
 }
 .alert-error { background: rgba(248, 81, 73, 0.15); color: #ff7b72; border: 1px solid #f85149; }
+/* ── DRRM Report Download Button ─────────────────────────────── */
+.btn-drrm-report {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #0d47a1, #1565c0);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(13,71,161,0.35);
+    margin-right: 10px;
+}
+.btn-drrm-report:hover {
+    background: linear-gradient(135deg, #1565c0, #1976d2);
+    box-shadow: 0 4px 14px rgba(13,71,161,0.45);
+    transform: translateY(-1px);
+    color: #fff;
+    text-decoration: none;
+}
+.btn-drrm-report svg { flex-shrink: 0; }

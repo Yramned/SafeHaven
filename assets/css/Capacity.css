@@ -339,3 +339,27 @@
   color: #94a3b8;
 }
 .cap-people-count svg { stroke: #6366f1; }
+
+/* ── DRRM Report Button in Capacity page ─────────────────────── */
+.sh-report-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #0d47a1, #1565c0);
+    color: #fff !important;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-left: 10px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(13,71,161,0.3);
+}
+.sh-report-btn:hover {
+    background: linear-gradient(135deg, #1565c0, #1976d2);
+    box-shadow: 0 4px 12px rgba(13,71,161,0.4);
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: #fff !important;
+}
