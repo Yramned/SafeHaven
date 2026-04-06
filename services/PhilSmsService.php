@@ -1,6 +1,6 @@
 <?php
 /**
- * SafeHaven - PhilSMS Service
+ * SafeHavens - PhilSMS Service
  * Implementation copied from SilentSignal (same PhilSMS account).
  *
  * Endpoint:  https://dashboard.philsms.com/api/v3/sms/send
