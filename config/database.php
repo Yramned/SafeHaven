@@ -21,7 +21,7 @@ class Database {
     private function __construct() {
         if (IS_LOCAL) {
             $this->host     = 'localhost';
-            $this->dbname   = 'safehaven';   // <-- change if your local DB has a different name
+            $this->dbname   = 'safehaven2';   // <-- change if your local DB has a different name
             $this->username = 'root';
             $this->password = '';
         } else {

@@ -1,0 +1,285 @@
+/* ═══════════════════════════════════════════════════════
+   SafeHaven – AdminAnalytics.css
+   Admin-only analytics section on the dashboard.
+   Matches the dark SafeHaven design system.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Section label ───────────────────────────────────── */
+.an-section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--sh-text-muted, #4e6880);
+    margin: 28px 0 12px;
+}
+
+/* ── Stat Cards Row ─────────────────────────────────── */
+.an-stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.an-stat-card {
+    background: var(--navy-800, #121e2e);
+    border: 1px solid rgba(52,152,219,0.13);
+    border-radius: 14px;
+    padding: 18px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.an-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+}
+
+.an-stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.an-stat-icon svg { width: 20px; height: 20px; }
+
+.an-icon-blue   { background: rgba(52,152,219,0.14); color: #3498db; }
+.an-icon-red    { background: rgba(231,76,60,0.14);  color: #e74c3c; }
+.an-icon-green  { background: rgba(39,174,96,0.14);  color: #27ae60; }
+.an-icon-orange { background: rgba(230,126,34,0.14); color: #e67e22; }
+
+.an-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white, #e8f0f8);
+    line-height: 1.1;
+}
+
+.an-stat-label {
+    color: var(--sh-text-sub, #8faabf);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 3px;
+}
+
+.an-stat-sub {
+    color: var(--sh-text-muted, #4e6880);
+    font-size: 0.7rem;
+    margin-top: 3px;
+}
+
+/* ── Chart Cards ────────────────────────────────────── */
+.an-charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.an-charts-three {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.an-chart-card {
+    background: var(--navy-800, #121e2e);
+    border: 1px solid rgba(52,152,219,0.13);
+    border-radius: 16px;
+    padding: 20px 18px;
+}
+
+.an-chart-wide {
+    grid-column: span 1;
+}
+
+.an-chart-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.an-chart-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white, #e8f0f8);
+}
+
+/* ── Badges ─────────────────────────────────────────── */
+.an-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.an-badge-blue   { background: rgba(52,152,219,0.18);  color: #5dade2; }
+.an-badge-red    { background: rgba(231,76,60,0.18);   color: #ec7063; }
+.an-badge-green  { background: rgba(39,174,96,0.18);   color: #52be80; }
+.an-badge-orange { background: rgba(230,126,34,0.18);  color: #eb984e; }
+
+/* ── Chart Legend ───────────────────────────────────── */
+.an-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 10px;
+    font-size: 0.72rem;
+    color: var(--sh-text-sub, #8faabf);
+}
+
+.an-legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.an-leg {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* ── Tables ─────────────────────────────────────────── */
+.an-table-card {
+    background: var(--navy-800, #121e2e);
+    border: 1px solid rgba(52,152,219,0.13);
+    border-radius: 16px;
+    padding: 20px 18px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.an-table-wrap {
+    overflow-x: auto;
+    margin-top: 14px;
+}
+
+.an-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    min-width: 560px;
+}
+
+.an-table th {
+    text-align: left;
+    padding: 9px 12px;
+    color: var(--sh-text-muted, #4e6880);
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(52,152,219,0.1);
+    white-space: nowrap;
+}
+
+.an-table td {
+    padding: 10px 12px;
+    color: var(--sh-text, #e8f0f8);
+    border-bottom: 1px solid rgba(52,152,219,0.07);
+    vertical-align: middle;
+}
+
+.an-table tr:last-child td { border-bottom: none; }
+
+.an-table tr:hover td {
+    background: rgba(52,152,219,0.05);
+}
+
+.an-td-bold  { font-weight: 600; }
+.an-td-muted { color: var(--sh-text-muted, #4e6880); }
+
+/* ── Status Pills ───────────────────────────────────── */
+.an-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.an-pill-green  { background: rgba(39,174,96,0.18);   color: #52be80; }
+.an-pill-teal   { background: rgba(26,188,156,0.18);  color: #48c9b0; }
+.an-pill-blue   { background: rgba(52,152,219,0.18);  color: #5dade2; }
+.an-pill-orange { background: rgba(230,126,34,0.18);  color: #eb984e; }
+.an-pill-yellow { background: rgba(243,156,18,0.18);  color: #f4d03f; }
+.an-pill-red    { background: rgba(231,76,60,0.18);   color: #ec7063; }
+.an-pill-purple { background: rgba(99,102,241,0.18);  color: #818cf8; }
+
+/* ── Capacity Bar ───────────────────────────────────── */
+.an-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+}
+
+.an-bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(52,152,219,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.an-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.an-bar-pct {
+    font-size: 0.7rem;
+    color: var(--sh-text-muted, #4e6880);
+    min-width: 32px;
+    text-align: right;
+}
+
+/* ── Empty state ────────────────────────────────────── */
+.an-empty {
+    color: var(--sh-text-muted, #4e6880);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 28px 0 12px;
+}
+.an-empty a { color: #5dade2; }
+
+/* ── Divider ────────────────────────────────────────── */
+.an-divider {
+    height: 1px;
+    background: rgba(52,152,219,0.1);
+    margin: 32px 0 20px;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 900px) {
+    .an-stat-row      { grid-template-columns: repeat(2, 1fr); }
+    .an-charts-row    { grid-template-columns: 1fr; }
+    .an-charts-three  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .an-stat-row { grid-template-columns: 1fr; }
+    .an-stat-card { padding: 14px; }
+}
+
+/* truncate long special needs text */
+.an-td-truncate {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

@@ -1,54 +1,49 @@
 <?php
 /**
- * SafeHaven - Main Configuration Filess
- * Auto-detects environment (localhost vs HelioHost)
+ * SafeHaven - Main Configuration File
+ * Works on XAMPP (Windows/Mac/Linux) and HelioHost.
  */
 
-// Detect environment
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isLocal = (
-    $_SERVER['HTTP_HOST'] === 'localhost' || 
-    strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false ||
-    strpos($_SERVER['HTTP_HOST'], 'localhost:') !== false
+    $host === 'localhost' ||
+    str_starts_with($host, '127.') ||
+    str_starts_with($host, '192.168.') ||
+    str_ends_with($host, '.local') ||
+    strpos($host, ':') !== false
 );
-
-// Environment Constants
 define('IS_LOCAL', $isLocal);
 
-// Base URL Configuration
 if ($isLocal) {
-    // For localhost - adjust this if your project is in a subfolder
-    define('BASE_URL', 'http://localhost/safehaven/');
+    $docRoot   = rtrim(str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'])), '/');
+    $indexFile = str_replace('\\', '/', realpath(dirname(__DIR__) . '/index.php'));
+    $indexDir  = str_replace('\\', '/', dirname($indexFile));
+    $subPath   = ltrim(str_replace($docRoot, '', $indexDir), '/');
+    $baseUrl   = 'http://' . $host . '/' . ($subPath ? $subPath . '/' : '');
+    define('BASE_URL', $baseUrl);
 } else {
-    // For HelioHost - your project is in the root
     define('BASE_URL', 'https://safehaven.helioho.st/');
 }
 
-// Site Configuration
-define('SITE_NAME', 'SafeHaven');
+define('SITE_NAME',        'SafeHaven');
 define('SITE_DESCRIPTION', 'Emergency Evacuation System');
-
-// Contact Information
-define('CONTACT_PHONE', '+63 947 7153 075');
-define('CONTACT_EMAIL', 'safehaven@support.com');
+define('CONTACT_PHONE',   '+63 947 7153 075');
+define('CONTACT_EMAIL',   'safehaven@support.com');
 define('CONTACT_ADDRESS', 'Cebu City, Philippines');
 define('CONTACT_WEBSITE', 'www.safehaven.com');
+define('PHILSMS_TOKEN',   '1921|mmCNh0q3Dbpi7pUb9pvlteVWMLoRsDlgbawgNtBAf861eeb3');
 
-// PhilSMS API
-define('PHILSMS_TOKEN', '1921|mmCNh0q3Dbpi7pUb9pvlteVWMLoRsDlgbawgNtBAf861eeb3');
-
-// Path Constants
-define('ROOT_PATH', dirname(__DIR__) . '/');
-define('CONFIG_PATH', ROOT_PATH . 'config/');
+define('ROOT_PATH',       dirname(__DIR__) . '/');
+define('CONFIG_PATH',     ROOT_PATH . 'config/');
 define('CONTROLLER_PATH', ROOT_PATH . 'controllers/');
-define('MODEL_PATH', ROOT_PATH . 'models/');
-define('VIEW_PATH', ROOT_PATH . 'views/');
-define('STORAGE_PATH', ROOT_PATH . 'storage/');
-define('SERVICES_PATH', ROOT_PATH . 'services/');
-define('ASSET_PATH', BASE_URL . 'assets/');
-define('CSS_PATH', ASSET_PATH . 'css/');
-define('JS_PATH', ASSET_PATH . 'js/');
+define('MODEL_PATH',      ROOT_PATH . 'models/');
+define('VIEW_PATH',       ROOT_PATH . 'views/');
+define('STORAGE_PATH',    ROOT_PATH . 'storage/');
+define('SERVICES_PATH',   ROOT_PATH . 'services/');
+define('ASSET_PATH',      BASE_URL  . 'assets/');
+define('CSS_PATH',        ASSET_PATH . 'css/');
+define('JS_PATH',         ASSET_PATH . 'js/');
 
-// Error Reporting
 if ($isLocal) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
@@ -60,20 +55,11 @@ if ($isLocal) {
     ini_set('error_log', ROOT_PATH . 'storage/error.log');
 }
 
-// Session Configuration
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Timezone
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 date_default_timezone_set('Asia/Manila');
 
-// JSON File Paths
-define('USERS_FILE', STORAGE_PATH . 'users.json');
+define('USERS_FILE',    STORAGE_PATH . 'users.json');
 define('MESSAGES_FILE', STORAGE_PATH . 'messages.json');
 define('CAPACITY_FILE', STORAGE_PATH . 'capacity_data.json');
 
-// Initialize storage directory
-if (!is_dir(STORAGE_PATH)) {
-    @mkdir(STORAGE_PATH, 0755, true);
-}
+if (!is_dir(STORAGE_PATH)) { @mkdir(STORAGE_PATH, 0755, true); }
