@@ -1,6 +1,6 @@
 <?php
 /**
- * SafeHaven - Main Configuration Files
+ * SafeHaven - Main Configuration Filess
  * Auto-detects environment (localhost vs HelioHost)
  */
 
