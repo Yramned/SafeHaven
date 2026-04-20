@@ -1,6 +1,6 @@
 <?php
 /**
- * SafeHaven - Alerts Controller
+ * SafeHaven - Alerts Controllers
  * Handles GET (page render) and POST (create, delete, mark-read) for situational alerts.
  */
 
