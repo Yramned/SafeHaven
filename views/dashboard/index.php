@@ -122,20 +122,24 @@ $isAdmin = strtolower($_SESSION['user_role'] ?? '') === 'admin';
     </div>
 </div>
 
-<!-- ── Monthly Activity + Request Status ──────────────── -->
+<!-- ── Activity + Request Status ──────────────────────── -->
 <div class="an-section-label">Activity &amp; Trends</div>
 <div class="an-charts-row">
     <div class="an-chart-card an-chart-wide">
         <div class="an-chart-head">
-            <span class="an-chart-title">Monthly Activity</span>
-            <span class="an-badge an-badge-blue">LAST 6 MONTHS</span>
+            <span class="an-chart-title">Activity Over Time</span>
+            <div class="an-period-filters">
+                <button class="an-period-btn an-period-active" data-period="daily">Daily</button>
+                <button class="an-period-btn" data-period="weekly">Weekly</button>
+                <button class="an-period-btn" data-period="monthly">Monthly</button>
+            </div>
         </div>
         <div class="an-legend">
             <span><span class="an-leg" style="background:#3498db"></span>Evacuation Requests</span>
             <span><span class="an-leg" style="background:#e74c3c"></span>Alerts Issued</span>
         </div>
-        <div style="position:relative;height:220px">
-            <canvas id="chartMonthly" role="img" aria-label="Monthly evacuations and alerts bar chart">Monthly data.</canvas>
+        <div id="chartMonthlyWrap" style="position:relative;height:220px">
+            <canvas id="chartMonthly" role="img" aria-label="Activity bar chart">Activity data.</canvas>
         </div>
     </div>
     <div class="an-chart-card">
@@ -291,27 +295,73 @@ $isAdmin = strtolower($_SESSION['user_role'] ?? '') === 'admin';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 (function(){
+    var BASE  = '<?= BASE_URL ?>';
     var grid  = 'rgba(52,152,219,0.1)';
     var ticks = '#5a7a95';
-    var mo = <?= json_encode($mo) ?>;
     var ur = <?= json_encode($ur) ?>;
     var as = <?= json_encode($as) ?>;
     var rs = <?= json_encode($rs) ?>;
     var rp = <?= json_encode($rp) ?>;
 
-    new Chart(document.getElementById('chartMonthly'),{
-        type:'bar',
-        data:{
-            labels:mo.labels,
-            datasets:[
-                {label:'Evacuation Requests',data:mo.evacuations,backgroundColor:'#3498db',borderRadius:4},
-                {label:'Alerts',data:mo.alerts,backgroundColor:'#e74c3c',borderRadius:4}
-            ]
-        },
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-            scales:{x:{grid:{color:grid},ticks:{color:ticks,font:{size:11}}},y:{grid:{color:grid},ticks:{color:ticks,font:{size:11}},beginAtZero:true}}}
+    // ── Activity chart with Daily / Weekly / Monthly filter ──────────────
+    var activityChart = null;
+
+    function buildActivityChart(data) {
+        var ctx = document.getElementById('chartMonthly');
+        if (!ctx) return;
+        if (activityChart) { activityChart.destroy(); }
+        activityChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {label:'Evacuation Requests', data:data.evacuations, backgroundColor:'#3498db', borderRadius:4},
+                    {label:'Alerts Issued',        data:data.alerts,     backgroundColor:'#e74c3c', borderRadius:4}
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid:{color:grid}, ticks:{color:ticks, font:{size:11}} },
+                    y: { grid:{color:grid}, ticks:{color:ticks, font:{size:11}}, beginAtZero:true }
+                }
+            }
+        });
+    }
+
+    function loadActivityData(period) {
+        var wrap = document.getElementById('chartMonthlyWrap');
+        if (wrap) wrap.style.opacity = '0.5';
+        fetch(BASE + 'index.php?page=chart-data&period=' + encodeURIComponent(period))
+            .then(function(r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(function(data) {
+                if (wrap) wrap.style.opacity = '1';
+                buildActivityChart(data);
+            })
+            .catch(function(err) {
+                if (wrap) wrap.style.opacity = '1';
+                console.error('[SafeHaven] Chart data error:', err);
+            });
+    }
+
+    // Initial load (default: daily)
+    loadActivityData('daily');
+
+    // Filter button click handler
+    document.querySelectorAll('.an-period-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.an-period-btn').forEach(function(b){ b.classList.remove('an-period-active'); });
+            this.classList.add('an-period-active');
+            loadActivityData(this.getAttribute('data-period'));
+        });
     });
 
+    // ── Other charts (static, no filter needed) ──────────────────────────
     new Chart(document.getElementById('chartReqStatus'),{
         type:'doughnut',
         data:{

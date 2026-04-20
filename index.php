@@ -235,9 +235,31 @@ switch ($page) {
 
     // ── DRRM INCIDENT REPORT (admin only) ────────────────────────────────
     case 'drrm-report':
+        if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'admin') {
+            header('Location: ' . BASE_URL . 'index.php?page=login');
+            exit;
+        }
         require_once CONTROLLER_PATH . 'ReportController.php';
-        // ReportController.php outputs PDF directly and calls exit
-        break;
+        ReportController::generate();
+        exit;
+
+    // ── CHART DATA AJAX (admin only, supports daily/weekly/monthly filter) ──
+    case 'chart-data':
+        if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized']);
+            exit;
+        }
+        require_once MODEL_PATH . 'AdminAnalyticsModel.php';
+        $period = $_GET['period'] ?? 'monthly';
+        header('Content-Type: application/json');
+        try {
+            echo json_encode(AdminAnalyticsModel::getActivityByPeriod($period));
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to load chart data.']);
+        }
+        exit;
 
     // ── SMS TEST (admin only, debug) ─────────────────────────────────────
     case 'test-sms':
@@ -268,7 +290,10 @@ switch ($page) {
         echo '<div style="padding:100px;text-align:center;">';
         echo '<h1>404 – Page Not Found</h1>';
         echo '<p>The page you are looking for does not exist.</p>';
-        echo '<a href="' . BASE_URL . 'index.php?page=dashboard">Go to Dashboard</a>';
+        $homeLink = isset($_SESSION['user_id'])
+            ? BASE_URL . 'index.php?page=dashboard'
+            : BASE_URL . 'index.php?page=home';
+        echo '<a href="' . $homeLink . '">Go to Home</a>';
         echo '</div>';
         require_once VIEW_PATH . 'shared/footer.php';
         break;

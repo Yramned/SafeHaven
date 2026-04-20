@@ -182,6 +182,130 @@ class AdminAnalyticsModel {
         return $rows;
     }
 
+    /**
+     * Activity data filtered by period: 'daily' (last 7 days),
+     * 'weekly' (last 8 weeks), or 'monthly' (last 6 months).
+     * Returns chart-ready labels + dataset arrays.
+     */
+    public static function getActivityByPeriod(string $period = 'monthly'): array {
+        $db = self::getDB();
+
+        $labels   = [];
+        $keys     = [];
+        $evac     = [];
+        $alerts   = [];
+
+        if ($period === 'daily') {
+            // Last 7 days
+            for ($i = 6; $i >= 0; $i--) {
+                $ts       = strtotime("-{$i} days");
+                $labels[] = date('D M j', $ts);   // e.g. "Mon Apr 14"
+                $keys[]   = date('Y-m-d', $ts);
+            }
+            $evac   = array_fill_keys($keys, 0);
+            $alerts = array_fill_keys($keys, 0);
+
+            try {
+                $stmt = $db->query("
+                    SELECT DATE(created_at) AS day, COUNT(*) AS cnt
+                    FROM evacuation_requests
+                    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+                    GROUP BY day
+                ");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($evac[$row['day']])) $evac[$row['day']] = (int)$row['cnt'];
+                }
+            } catch (Exception $e) {}
+
+            try {
+                $stmt = $db->query("
+                    SELECT DATE(created_at) AS day, COUNT(*) AS cnt
+                    FROM alerts
+                    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+                    GROUP BY day
+                ");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($alerts[$row['day']])) $alerts[$row['day']] = (int)$row['cnt'];
+                }
+            } catch (Exception $e) {}
+
+        } elseif ($period === 'weekly') {
+            // Last 8 weeks (ISO week)
+            for ($i = 7; $i >= 0; $i--) {
+                $ts       = strtotime("-{$i} weeks");
+                $labels[] = 'Wk ' . date('W', $ts);
+                $keys[]   = date('o-W', $ts);   // ISO year-week, e.g. 2025-14
+            }
+            $evac   = array_fill_keys($keys, 0);
+            $alerts = array_fill_keys($keys, 0);
+
+            try {
+                $stmt = $db->query("
+                    SELECT DATE_FORMAT(created_at,'%x-%v') AS yw, COUNT(*) AS cnt
+                    FROM evacuation_requests
+                    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 8 WEEK)
+                    GROUP BY yw
+                ");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($evac[$row['yw']])) $evac[$row['yw']] = (int)$row['cnt'];
+                }
+            } catch (Exception $e) {}
+
+            try {
+                $stmt = $db->query("
+                    SELECT DATE_FORMAT(created_at,'%x-%v') AS yw, COUNT(*) AS cnt
+                    FROM alerts
+                    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 8 WEEK)
+                    GROUP BY yw
+                ");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($alerts[$row['yw']])) $alerts[$row['yw']] = (int)$row['cnt'];
+                }
+            } catch (Exception $e) {}
+
+        } else {
+            // Default: monthly — last 6 months
+            for ($i = 5; $i >= 0; $i--) {
+                $ts       = strtotime("-{$i} months");
+                $labels[] = date('M Y', $ts);
+                $keys[]   = date('Y-m', $ts);
+            }
+            $evac   = array_fill_keys($keys, 0);
+            $alerts = array_fill_keys($keys, 0);
+
+            try {
+                $stmt = $db->query("
+                    SELECT DATE_FORMAT(created_at,'%Y-%m') AS ym, COUNT(*) AS cnt
+                    FROM evacuation_requests
+                    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                    GROUP BY ym
+                ");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($evac[$row['ym']])) $evac[$row['ym']] = (int)$row['cnt'];
+                }
+            } catch (Exception $e) {}
+
+            try {
+                $stmt = $db->query("
+                    SELECT DATE_FORMAT(created_at,'%Y-%m') AS ym, COUNT(*) AS cnt
+                    FROM alerts
+                    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                    GROUP BY ym
+                ");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($alerts[$row['ym']])) $alerts[$row['ym']] = (int)$row['cnt'];
+                }
+            } catch (Exception $e) {}
+        }
+
+        return [
+            'period'      => $period,
+            'labels'      => $labels,
+            'evacuations' => array_values($evac),
+            'alerts'      => array_values($alerts),
+        ];
+    }
+
     /** Recent evacuation requests (last 10) */
     public static function getRecentRequests(): array {
         $db = self::getDB();
