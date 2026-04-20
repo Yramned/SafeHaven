@@ -160,15 +160,20 @@ async function submitAddCenter() {
         facilities:     document.getElementById('ac_facilities').value.trim(),
     };
 
-    const res  = await fetch('index.php?page=center-add', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    const data = await res.json();
+    try {
+        const res  = await fetch('index.php?page=center-add', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+        const data = await res.json();
 
-    if (data.success) {
-        showToast('Center added successfully!');
-        closeAddCenter();
-        setTimeout(() => location.reload(), 800);
-    } else {
-        errEl.textContent = data.message || 'Failed to add center.';
+        if (data.success) {
+            showToast('Center added successfully!');
+            closeAddCenter();
+            setTimeout(() => location.reload(), 800);
+        } else {
+            errEl.textContent = data.message || 'Failed to add center.';
+            errEl.style.display = 'block';
+        }
+    } catch (e) {
+        errEl.textContent = 'Network error. Please try again.';
         errEl.style.display = 'block';
     }
 }
@@ -209,15 +214,20 @@ async function submitEditCenter() {
         return;
     }
 
-    const res  = await fetch('index.php?page=center-edit', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    const data = await res.json();
+    try {
+        const res  = await fetch('index.php?page=center-edit', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+        const data = await res.json();
 
-    if (data.success) {
-        showToast('Center updated!');
-        closeEditCenter();
-        setTimeout(() => location.reload(), 800);
-    } else {
-        errEl.textContent = data.message || 'Failed to update.';
+        if (data.success) {
+            showToast('Center updated!');
+            closeEditCenter();
+            setTimeout(() => location.reload(), 800);
+        } else {
+            errEl.textContent = data.message || 'Failed to update.';
+            errEl.style.display = 'block';
+        }
+    } catch (e) {
+        errEl.textContent = 'Network error. Please try again.';
         errEl.style.display = 'block';
     }
 }
@@ -228,14 +238,19 @@ function confirmDeleteCenter(centerId, name) {
     document.getElementById('deleteCenterMsg').textContent = `Permanently delete "${name}"? This cannot be undone.`;
     document.getElementById('deleteCenterModal').classList.add('sh-open');
     document.getElementById('doDeleteCenterBtn').onclick = async () => {
-        const res  = await fetch('index.php?page=center-delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({center_id:centerId}) });
-        const data = await res.json();
-        if (data.success) {
-            showToast('Center deleted.');
-            closeDeleteCenterModal();
-            setTimeout(() => location.reload(), 800);
-        } else {
-            showToast(data.message || 'Delete failed.', true);
+        try {
+            const res  = await fetch('index.php?page=center-delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({center_id:centerId}) });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Center deleted.');
+                closeDeleteCenterModal();
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.message || 'Delete failed.', true);
+                closeDeleteCenterModal();
+            }
+        } catch (e) {
+            showToast('Network error. Please try again.', true);
             closeDeleteCenterModal();
         }
     };

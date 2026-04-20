@@ -1,10 +1,13 @@
 <?php
 /**
  * SafeHaven – Footer Template
+ * Used by both public (header.php) and dashboard (dashboard-header.php) pages.
+ * $isDashboard is set to true by dashboard-header.php to skip the public footer.
  */
 ?>
 
-<!-- FOOTER -->
+<?php if (empty($isDashboard)): ?>
+<!-- PUBLIC FOOTER ─────────────────────────────────────────── -->
 <footer class="footer">
     <div class="container">
         <div class="footer-grid">
@@ -12,7 +15,7 @@
             <!-- Brand column -->
             <div class="footer-col">
                 <div class="footer-brand-logo">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7eb8da" stroke-width="2" stroke-linejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7eb8da" stroke-width="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                         <polyline points="9 22 9 12 15 12 15 22"/>
                     </svg>
@@ -48,9 +51,12 @@
         <p class="footer-bottom">&copy; <?= date('Y') ?> SafeHaven. All Rights Reserved.</p>
     </div>
 </footer>
+<?php endif; ?>
 
-<!-- GLOBAL JS -->
-<script src="<?= JS_PATH ?>Main.js"></script>
+<!-- GLOBAL JS (public pages only – dashboard pages load their own scripts) -->
+<?php if (empty($isDashboard)): ?>
+    <script src="<?= JS_PATH ?>Main.js"></script>
+<?php endif; ?>
 
 <!-- Page-specific scripts -->
 <?php foreach (($extraJs ?? []) as $script): ?>

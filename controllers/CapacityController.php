@@ -31,9 +31,16 @@ class CapacityController {
         $extraJs = ['assets/js/capacity.js'];
         
         // Get centers, stats, and recent evacuation requests
-        $centers        = EvacuationCenterModel::getAll();
-        $statistics     = EvacuationCenterModel::getStatistics();
-        $recentRequests = EvacuationModel::getAll(20);
+        try {
+            $centers        = EvacuationCenterModel::getAll();
+            $statistics     = EvacuationCenterModel::getStatistics();
+            $recentRequests = EvacuationModel::getAll(20);
+        } catch (Exception $e) {
+            error_log('[CapacityController] index: ' . $e->getMessage());
+            $centers        = [];
+            $statistics     = [];
+            $recentRequests = [];
+        }
         
         require_once VIEW_PATH . 'shared/dashboard-header.php';
         require_once VIEW_PATH . 'pages/capacity.php';

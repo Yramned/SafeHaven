@@ -337,3 +337,9 @@
 @media(max-width:380px){
     .sensor-grid { grid-template-columns:1fr; }
 }
+/* ─── Additional mobile fixes ─────────────────────── */
+@media (max-width: 400px) {
+    .sensor-grid { grid-template-columns: 1fr; }
+    .sensor-card { padding: 14px 12px; }
+    .sensor-val  { font-size: 1.6rem; }
+}

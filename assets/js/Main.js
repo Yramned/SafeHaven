@@ -1,45 +1,81 @@
+/**
+ * SafeHaven – Main.js
+ * Public pages: navbar scroll, hamburger, smooth scroll, reveal animations.
+ */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* ── Navbar scroll effect ─────────────────── */
-    const navbar = document.getElementById('navbar');
+    /* ── Navbar scroll effect ──────────────────────────── */
+    var navbar = document.getElementById('navbar');
     if (navbar) {
-        window.addEventListener('scroll', () => {
+        window.addEventListener('scroll', function() {
             navbar.classList.toggle('scrolled', window.scrollY > 48);
         }, { passive: true });
     }
 
-    /* ── Mobile hamburger ─────────────────────── */
-    const hamburger = document.getElementById('navHamburger');
-    const mobile    = document.getElementById('navMobile');
+    /* ── Mobile hamburger ──────────────────────────────── */
+    var hamburger = document.getElementById('navHamburger');
+    var mobile    = document.getElementById('navMobile');
     if (hamburger && mobile) {
-        hamburger.addEventListener('click', () => mobile.classList.toggle('open'));
-        // Close when a link inside is clicked
-        mobile.querySelectorAll('a').forEach(a =>
-            a.addEventListener('click', () => mobile.classList.remove('open'))
-        );
+        hamburger.addEventListener('click', function() {
+            var isOpen = mobile.classList.toggle('open');
+            hamburger.classList.toggle('open', isOpen);
+            hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        // Close when any link inside is clicked
+        mobile.querySelectorAll('a').forEach(function(a) {
+            a.addEventListener('click', function() {
+                mobile.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+            if (!navbar.contains(e.target)) {
+                mobile.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+            }
+        });
     }
 
-    /* ── Smooth scroll for hash links ─────────── */
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-            const target = document.getElementById(a.getAttribute('href').slice(1));
+    /* ── Smooth scroll for hash links ──────────────────── */
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+            var id     = a.getAttribute('href').slice(1);
+            var target = document.getElementById(id);
             if (!target) return;
             e.preventDefault();
-            const offset = navbar ? navbar.offsetHeight : 0;
-            window.scrollTo({ top: target.getBoundingClientRect().top + scrollY - offset, behavior: 'smooth' });
+            var offset = navbar ? navbar.offsetHeight : 0;
+            window.scrollTo({
+                top: target.getBoundingClientRect().top + window.scrollY - offset,
+                behavior: 'smooth'
+            });
         });
     });
 
-    /* ── Reveal on scroll (IntersectionObserver) ─ */
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                revealObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
+    /* ── Reveal on scroll (IntersectionObserver) ─────────── */
+    if ('IntersectionObserver' in window) {
+        var revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
 
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            revealObserver.observe(el);
+        });
+    } else {
+        // Fallback: show all reveal elements
+        document.querySelectorAll('.reveal').forEach(function(el) {
+            el.classList.add('visible');
+        });
+    }
+
 });

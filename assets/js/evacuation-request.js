@@ -155,13 +155,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         }, 2000);
                     },
                     (error) => {
-                        alert('Could not get your location. Please enter manually.');
+                        showGpsError('Could not get your location. Please enter address manually.');
                         this.textContent = 'Use My Current GPS Location';
                         this.disabled = false;
                     }
                 );
             } else {
-                alert('Geolocation is not supported by your browser.');
+                showGpsError('Geolocation is not supported by your browser. Please enter address manually.');
             }
         });
     }
@@ -199,24 +199,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(requestData)
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Server returned ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
                 if (data.success) {
                     // Hide form, show success screen
                     evacuationFormScreen.style.display = 'none';
                     evacuationSuccessScreen.style.display = 'block';
-                    
                     // Update success screen with response data
                     updateSuccessScreen(data);
                 } else {
-                    alert(data.message || 'Failed to submit request. Please try again.');
+                    showError(data.message || 'Failed to submit request. Please try again.');
                     btnRequestEvac.disabled = false;
                     btnRequestEvac.textContent = 'Request Evacuation';
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+            .catch(function(error) {
+                console.error('Evacuation request error:', error);
+                showError('A network error occurred. Please check your connection and try again.');
                 btnRequestEvac.disabled = false;
                 btnRequestEvac.textContent = 'Request Evacuation';
             });
@@ -353,6 +357,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 locationModal.style.display = 'none';
             }
         });
+    }
+
+    // ── Inline error display (instead of alert()) ─────────────────────────
+    function showError(msg) {
+        var existing = document.getElementById('evac-inline-error');
+        if (existing) existing.remove();
+        var el = document.createElement('div');
+        el.id = 'evac-inline-error';
+        el.setAttribute('role', 'alert');
+        el.style.cssText = 'background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.4);color:#e8877a;border-radius:10px;padding:12px 16px;font-size:0.88rem;margin-top:14px;';
+        el.textContent = msg;
+        var form = document.getElementById('evacuationFormScreen');
+        if (form) form.insertAdjacentElement('beforeend', el);
+    }
+
+    function showGpsError(msg) {
+        var modal = document.getElementById('locationModal');
+        var existing = document.getElementById('gps-error-msg');
+        if (existing) existing.remove();
+        var el = document.createElement('p');
+        el.id = 'gps-error-msg';
+        el.style.cssText = 'color:#e8877a;font-size:0.82rem;margin-top:8px;';
+        el.textContent = msg;
+        var useGpsBtn = document.getElementById('useGpsBtn');
+        if (useGpsBtn && useGpsBtn.parentNode) {
+            useGpsBtn.parentNode.insertBefore(el, useGpsBtn.nextSibling);
+        } else if (modal) {
+            modal.insertAdjacentElement('beforeend', el);
+        }
     }
 });
 

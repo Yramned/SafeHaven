@@ -3,7 +3,7 @@
    Dark theme to match dashboard
    ═══════════════════════════════════════════════════ */
 
-.profile-page  { min-height: 100vh; }
+.profile-page  { min-height: 100vh; padding-top: 68px; background: var(--sh-bg, #0d1520); }
 .profile-main  { padding: 30px 20px 60px; }
 
 .profile-container {
@@ -493,3 +493,16 @@
     font-size: 13px;
 }
 .family-empty-state span { font-size: 28px; display: block; margin-bottom: 6px; }
+
+/* ─── Additional mobile fixes ─────────────────────── */
+@media (max-width: 480px) {
+    .profile-page { padding: 0; }
+    .profile-main { padding: 14px 12px 56px; }
+    .profile-container { gap: 14px; }
+    .profile-page-head { margin-bottom: 14px; }
+    .profile-page-head h2 { font-size: 1.05rem; }
+    .profile-card { padding: 20px 14px; }
+    .family-input-row { flex-direction: column; gap: 8px; }
+    .family-input-row input { width: 100%; }
+    .btn-add-family { width: 100%; justify-content: center; }
+}

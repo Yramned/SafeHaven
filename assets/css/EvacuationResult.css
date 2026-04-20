@@ -5,7 +5,7 @@
 
 .result-page {
     min-height: 100vh;
-    padding-top: 64px;
+    padding-top: 68px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(145deg, #0a1628 0%, #0f1e33 50%, #0d1b2e 100%);
@@ -694,4 +694,16 @@
     .center-icon-wrapper {
         margin: 0 auto;
     }
+}
+/* ─── Additional mobile fixes ─────────────────────── */
+@media (max-width: 380px) {
+    .result-page { padding: 0; }
+    .result-main { padding: 12px 10px 52px; }
+    .success-hero,
+    .decline-hero { padding: 20px 14px; }
+    .conf-code { font-size: 0.78rem; letter-spacing: 0.04em; }
+    .center-info-grid { grid-template-columns: 1fr; }
+    .action-btns { flex-direction: column; }
+    .action-btns a,
+    .action-btns button { width: 100%; text-align: center; justify-content: center; }
 }

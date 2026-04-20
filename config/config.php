@@ -53,6 +53,35 @@ if ($isLocal) {
     error_reporting(E_ALL);
     ini_set('log_errors', 1);
     ini_set('error_log', ROOT_PATH . 'storage/error.log');
+
+    // Global exception/error handler for production – prevents raw PHP errors leaking
+    set_exception_handler(function(Throwable $e) {
+        error_log('[SafeHaven] Uncaught exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        if (!headers_sent()) {
+            $isAjax = (
+                (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
+                (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)
+            );
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => 'An unexpected server error occurred. Please try again.']);
+            } else {
+                http_response_code(500);
+                echo '<!DOCTYPE html><html><head><title>Server Error – SafeHaven</title>
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#0a1628;color:#eef2f7;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center}h1{font-size:3rem;color:#e74c3c;margin-bottom:8px}p{color:#8fa8c2;margin:8px 0 24px}a{color:#5dade2;text-decoration:none;padding:10px 24px;border:1px solid #5dade2;border-radius:8px;font-weight:600}</style></head>
+                <body><div><h1>500</h1><h2 style="color:#fff;margin-bottom:12px">Server Error</h2><p>An unexpected error occurred. Please try again later.</p><a href="' . (defined('BASE_URL') ? htmlspecialchars(BASE_URL) : '/') . '">Go to Home</a></div></body></html>';
+            }
+        }
+        exit;
+    });
+
+    set_error_handler(function(int $errno, string $errstr, string $errfile, int $errline) {
+        if (!(error_reporting() & $errno)) return false;
+        error_log("[SafeHaven] PHP Error [{$errno}]: {$errstr} in {$errfile}:{$errline}");
+        return false; // continue with normal error handling
+    });
 }
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }

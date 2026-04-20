@@ -3,6 +3,8 @@
  * SafeHaven – Dashboard Header Template
  */
 
+$isDashboard = true; // Tells footer.php to skip public footer & Main.js
+
 $userName = $_SESSION['user_name'] ?? 'User';
 $userRole = strtolower($_SESSION['user_role'] ?? 'evacuee');
 

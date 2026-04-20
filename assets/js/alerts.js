@@ -160,12 +160,12 @@
             if (data.success && data.sensors) {
                 refreshSensorCards(data.sensors);
                 updateEditorFields(data.sensors);
-                alert('Sensors reset to defaults.');
+                showToast('Sensors reset to defaults.', 'success');
             } else {
-                alert('Reset failed: ' + (data.message || 'Unknown error'));
+                showToast('Reset failed: ' + (data.message || 'Unknown error'), 'error');
             }
         })
-        .catch(function () { alert('Reset failed (network error).'); });
+        .catch(function () { showToast('Reset failed (network error).', 'error'); });
     };
 
     // ── Alert detail modal ─────────────────────────────────────────────────
@@ -246,5 +246,27 @@
             });
         }
     });
+
+    // ── Toast notification (replaces alert()) ─────────────────────────────
+    function showToast(msg, type) {
+        var existing = document.getElementById('sh-toast');
+        if (existing) existing.remove();
+        var toast = document.createElement('div');
+        toast.id = 'sh-toast';
+        var bg   = type === 'success' ? 'rgba(39,174,96,0.92)' : 'rgba(231,76,60,0.92)';
+        toast.style.cssText = [
+            'position:fixed','bottom:24px','right:24px','z-index:9999',
+            'background:' + bg,'color:#fff','padding:12px 20px',
+            'border-radius:10px','font-size:0.88rem','font-weight:500',
+            'box-shadow:0 4px 16px rgba(0,0,0,0.3)','max-width:320px',
+            'transition:opacity 0.3s','pointer-events:none'
+        ].join(';');
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            setTimeout(function() { if (toast.parentNode) toast.remove(); }, 400);
+        }, 3200);
+    }
 
 })();

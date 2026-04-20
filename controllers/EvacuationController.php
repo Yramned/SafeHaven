@@ -218,10 +218,15 @@ class EvacuationController {
         $extraJs  = [];
         
         // Get evacuation centers from database
-        $evacuationCenters = EvacuationCenterModel::getAll();
-        
-        // Get statistics and user role
-        $statistics = EvacuationCenterModel::getStatistics();
+        try {
+            $evacuationCenters = EvacuationCenterModel::getAll();
+            // Get statistics and user role
+            $statistics = EvacuationCenterModel::getStatistics();
+        } catch (Exception $e) {
+            error_log('[EvacuationController] centers: ' . $e->getMessage());
+            $evacuationCenters = [];
+            $statistics = [];
+        }
         
         require_once VIEW_PATH . 'shared/dashboard-header.php';
         require_once VIEW_PATH . 'pages/centers.php';
@@ -265,10 +270,16 @@ class EvacuationController {
         $activePage = 'admin-evacuation';
         $extraCss   = ['assets/css/safehaven-system.css','assets/css/Capacity.css'];
         $extraJs    = ['assets/js/capacity.js'];
-        $allRequests     = EvacuationModel::getAll(200);
+        try {
+            $allRequests     = EvacuationModel::getAll(200);
+            $statistics      = EvacuationCenterModel::getStatistics();
+        } catch (Exception $e) {
+            error_log('[EvacuationController] adminRequests: ' . $e->getMessage());
+            $allRequests = [];
+            $statistics  = [];
+        }
         $pendingRequests = array_values(array_filter($allRequests, fn($r) => ($r['status'] ?? '') === 'pending'));
         $otherRequests   = array_values(array_filter($allRequests, fn($r) => ($r['status'] ?? '') !== 'pending'));
-        $statistics      = EvacuationCenterModel::getStatistics();
         require_once VIEW_PATH . 'shared/dashboard-header.php';
         require_once VIEW_PATH . 'pages/admin-evacuation.php';
         require_once VIEW_PATH . 'shared/footer.php';

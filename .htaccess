@@ -1,23 +1,63 @@
-# SafeHaven - Apache Configuration
-# Works on both localhost (XAMPP/WAMP) and HelioHost
+# SafeHaven – Apache Configuration
+# Compatible with HelioHost (Apache 2.4) and XAMPP/WAMP localhost
 
 Options -Indexes
 DirectoryIndex index.php
 
-# Redirect all traffic through index.php (optional - not strictly needed since routing uses ?page=)
-# Uncomment below only if you switch to pretty URLs:
-# RewriteEngine On
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_FILENAME} !-d
-# RewriteRule ^ index.php [QSA,L]
+# ── Character encoding ───────────────────────────────────────────────────
+AddDefaultCharset UTF-8
 
-# Security: protect sensitive directories
-<FilesMatch "\.(sql|log|json)$">
+# ── Security: block direct access to sensitive files/dirs ───────────────
+<FilesMatch "\.(sql|log)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-<FilesMatch "^(config|models|controllers|storage)/">
+# Block access to storage JSON files (messages, users backup)
+<FilesMatch "^(users|messages|capacity_data)\.json$">
     Order allow,deny
     Deny from all
 </FilesMatch>
+
+# Block PHP execution in storage folder
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^storage/.*\.php$ - [F,L]
+</IfModule>
+
+# ── Security headers ─────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # Remove PHP version exposure
+    Header always unset X-Powered-By
+</IfModule>
+
+# ── PHP settings (HelioHost-safe) ────────────────────────────────────────
+<IfModule mod_php.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value upload_max_filesize 8M
+    php_value post_max_size 10M
+    php_value max_execution_time 60
+    php_value session.cookie_httponly 1
+    php_value session.use_strict_mode 1
+</IfModule>
+
+# ── Compression (speeds up page load) ───────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ── Browser caching for static assets ───────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 7 days"
+</IfModule>

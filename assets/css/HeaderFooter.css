@@ -221,3 +221,18 @@ input,textarea,select {
     .nav-hamburger { display:flex; }
     .footer-grid { grid-template-columns:1fr; gap:28px; }
 }
+/* ─── Additional Mobile Fixes ───────────────────────── */
+@media(max-width:480px){
+    .nav-inner { padding:0 16px; height:58px; }
+    .nav-logo-text { font-size:1.05rem; }
+    .nav-mobile-panel { top:58px; padding:16px; }
+    .hero-float { display:none; } /* hide decorative cards on tiny screens */
+    .hero { padding:80px 18px 60px; }
+}
+@media(max-width:360px){
+    .btn-nav { font-size:0.8rem; padding:6px 12px; }
+}
+/* Hamburger active state */
+.nav-hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2){ opacity:0; }
+.nav-hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }

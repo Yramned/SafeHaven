@@ -1,2 +1,9 @@
-Order allow,deny
+# Block all direct access to storage directory contents
+Order deny,allow
 Deny from all
+
+# Only allow log and json reads through PHP, not directly
+<FilesMatch "\.(log|json)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>

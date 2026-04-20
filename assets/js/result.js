@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function selectCenter(centerName) {
-    alert('Selecting ' + centerName + '...');
-    setTimeout(() => {
-        window.location.href = 'evacuation-request.php';
-    }, 500);
+    // Redirect to make a new request at the selected center
+    window.location.href = (window.SAFEHAVEN_BASE || '') + 'index.php?page=evacuation-request';
 }

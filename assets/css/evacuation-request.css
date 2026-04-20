@@ -607,3 +607,11 @@
     .fam-count { font-size: 2.5rem; min-width: 70px; }
     .conf-code { font-size: 1.2rem; }
 }
+
+/* ─── Additional mobile fixes ─────────────────────── */
+@media (max-width: 400px) {
+    .priority-grid { grid-template-columns: 1fr 1fr; }
+    .needs-grid { grid-template-columns: 1fr 1fr; }
+    .btn-request-evac { font-size: 0.95rem; padding: 14px; }
+    .fam-count { font-size: 1.7rem; }
+}

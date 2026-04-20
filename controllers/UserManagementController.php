@@ -26,7 +26,12 @@ class UserManagementController {
         self::requireAdmin();
 
         // Load all users from DB
-        $users = UserModel::getAll();
+        try {
+            $users = UserModel::getAll();
+        } catch (Exception $e) {
+            error_log('[UserManagementController] index: ' . $e->getMessage());
+            $users = [];
+        }
 
         $totalUsers = count($users);
         $evacuees   = count(array_filter($users, fn($u) => ($u['role'] ?? '') === 'evacuee'));
@@ -64,7 +69,11 @@ class UserManagementController {
         $errors = [];
         if (strlen($fullName) < 2)                      $errors[] = 'Full name is required.';
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))  $errors[] = 'Valid email is required.';
-        if (UserModel::getByEmail($email))               $errors[] = 'Email already exists.';
+        try {
+            if (UserModel::getByEmail($email))           $errors[] = 'Email already exists.';
+        } catch (Exception $e) {
+            error_log('[UserManagement] addUser email check: ' . $e->getMessage());
+        }
         if (!in_array($role, ['evacuee', 'admin']))      $errors[] = 'Invalid role.';
         if (strlen($password) < 6)                       $errors[] = 'Password must be at least 6 characters.';
 
@@ -73,14 +82,20 @@ class UserManagementController {
             exit;
         }
 
-        $user = UserModel::create([
-            'full_name'    => $fullName,
-            'email'        => $email,
-            'phone_number' => $phone,
-            'address'      => $address,
-            'password'     => $password,
-            'role'         => $role,
-        ]);
+        try {
+            $user = UserModel::create([
+                'full_name'    => $fullName,
+                'email'        => $email,
+                'phone_number' => $phone,
+                'address'      => $address,
+                'password'     => $password,
+                'role'         => $role,
+            ]);
+        } catch (Exception $e) {
+            error_log('[UserManagement] addUser create: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Database error while creating user.']);
+            exit;
+        }
 
         if ($user) {
             echo json_encode([
@@ -162,28 +177,33 @@ class UserManagementController {
             exit;
         }
 
-        $ok = UserModel::update($userId, $updateData);
-        if ($ok) {
-            $updated = UserModel::getById($userId);
-            // Refresh session if editing yourself
-            if ((int)$userId === (int)$_SESSION['user_id']) {
-                $_SESSION['user_name']  = $updated['full_name'];
-                $_SESSION['user_email'] = $updated['email'];
-                $_SESSION['user_role']  = $updated['role'];
+        try {
+            $ok = UserModel::update($userId, $updateData);
+            if ($ok) {
+                $updated = UserModel::getById($userId);
+                // Refresh session if editing yourself
+                if ((int)$userId === (int)$_SESSION['user_id']) {
+                    $_SESSION['user_name']  = $updated['full_name'];
+                    $_SESSION['user_email'] = $updated['email'];
+                    $_SESSION['user_role']  = $updated['role'];
+                }
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'User updated successfully.',
+                    'user'    => [
+                        'id'           => $updated['id'],
+                        'full_name'    => $updated['full_name'],
+                        'email'        => $updated['email'],
+                        'phone_number' => $updated['phone_number'],
+                        'role'         => $updated['role'],
+                    ]
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to update user.']);
             }
-            echo json_encode([
-                'success' => true,
-                'message' => 'User updated successfully.',
-                'user'    => [
-                    'id'           => $updated['id'],
-                    'full_name'    => $updated['full_name'],
-                    'email'        => $updated['email'],
-                    'phone_number' => $updated['phone_number'],
-                    'role'         => $updated['role'],
-                ]
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to update user.']);
+        } catch (Exception $e) {
+            error_log('[UserManagement] editUser: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Database error while updating user.']);
         }
         exit;
     }
@@ -207,22 +227,27 @@ class UserManagementController {
             exit;
         }
 
-        // Prevent deleting the last admin
-        $user = UserModel::getById($userId);
-        if ($user && $user['role'] === 'admin') {
-            $adminCount = UserModel::countByRole('admin');
-            if ($adminCount <= 1) {
-                echo json_encode(['success' => false, 'message' => 'Cannot delete the last admin account.']);
-                exit;
+        try {
+            // Prevent deleting the last admin
+            $user = UserModel::getById($userId);
+            if ($user && $user['role'] === 'admin') {
+                $adminCount = UserModel::countByRole('admin');
+                if ($adminCount <= 1) {
+                    echo json_encode(['success' => false, 'message' => 'Cannot delete the last admin account.']);
+                    exit;
+                }
             }
-        }
 
-        $ok = UserModel::delete($userId);
-        echo json_encode([
-            'success' => $ok,
-            'message' => $ok ? 'User deleted.' : 'Failed to delete user.',
-            'id'      => $userId,
-        ]);
+            $ok = UserModel::delete($userId);
+            echo json_encode([
+                'success' => $ok,
+                'message' => $ok ? 'User deleted.' : 'Failed to delete user.',
+                'id'      => $userId,
+            ]);
+        } catch (Exception $e) {
+            error_log('[UserManagement] deleteUser: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Database error while deleting user.']);
+        }
         exit;
     }
 

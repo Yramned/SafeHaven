@@ -112,3 +112,10 @@
 .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; }
 .dot-red  { background:#f87171; }
 .dot-gray { background:#64748b; }
+
+/* ─── Additional mobile fixes ─────────────────────── */
+@media (max-width: 400px) {
+    .centers-grid { grid-template-columns: 1fr; }
+    .center-card { padding: 16px 14px; }
+    .cc-num-big { font-size: 1.5rem; }
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * SafeHaven - Alerts Controllers
+ * SafeHaven - Alerts Controller
  * Handles GET (page render) and POST (create, delete, mark-read) for situational alerts.
  */
 
@@ -126,9 +126,16 @@ class AlertsController {
 
         // ── GET: render page ─────────────────────────────────────────────────
         $filterSeverity = $_GET['severity'] ?? 'all';
-        $alerts         = AlertModel::getAll($filterSeverity);
-        $counts         = AlertModel::getCounts();
-        $sensorData     = SensorDataModel::getAll();
+        try {
+            $alerts     = AlertModel::getAll($filterSeverity);
+            $counts     = AlertModel::getCounts();
+            $sensorData = SensorDataModel::getAll();
+        } catch (Exception $e) {
+            error_log('[AlertsController] GET render: ' . $e->getMessage());
+            $alerts     = [];
+            $counts     = ['critical_count' => 0, 'warning_count' => 0, 'unread_count' => 0];
+            $sensorData = [];
+        }
 
         $userId    = (int)$_SESSION['user_id'];
         $userName  = $_SESSION['user_name'] ?? '';

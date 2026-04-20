@@ -307,3 +307,17 @@
     background: #3498db;
     color: #fff;
 }
+
+/* ── Additional mobile improvements ─────────────────── */
+@media (max-width: 480px) {
+    .an-stat-row      { grid-template-columns: 1fr; gap: 10px; }
+    .an-chart-card    { padding: 14px 12px; }
+    .an-chart-head    { flex-wrap: wrap; gap: 8px; }
+    .an-period-filters{ flex-wrap: wrap; }
+    .an-recent-table  { min-width: 520px; }
+}
+/* Overflow scroll for large tables */
+.an-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

@@ -286,15 +286,52 @@ switch ($page) {
         $activePage = 'error';
         $extraCss   = [];
         $extraJs    = [];
-        require_once VIEW_PATH . 'shared/header.php';
-        echo '<div style="padding:100px;text-align:center;">';
-        echo '<h1>404 – Page Not Found</h1>';
-        echo '<p>The page you are looking for does not exist.</p>';
-        $homeLink = isset($_SESSION['user_id'])
+        $homeLink   = isset($_SESSION['user_id'])
             ? BASE_URL . 'index.php?page=dashboard'
             : BASE_URL . 'index.php?page=home';
-        echo '<a href="' . $homeLink . '">Go to Home</a>';
-        echo '</div>';
+        require_once VIEW_PATH . 'shared/header.php';
+        echo '
+        <div style="
+            min-height:80vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            padding:60px 24px;
+            background:var(--navy-900, #0a1628);
+            color:var(--text-primary, #eef2f7);
+        ">
+            <div style="
+                width:80px;height:80px;
+                background:rgba(52,152,219,0.12);
+                border:1px solid rgba(52,152,219,0.25);
+                border-radius:20px;
+                display:flex;align-items:center;justify-content:center;
+                margin:0 auto 24px;
+            ">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#5dade2" stroke-width="1.5" width="40" height="40">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <h1 style="font-size:4rem;font-weight:700;color:#5dade2;margin-bottom:8px;line-height:1;">404</h1>
+            <h2 style="font-size:1.3rem;font-weight:600;color:#eef2f7;margin-bottom:12px;">Page Not Found</h2>
+            <p style="color:#8fa8c2;font-size:0.95rem;max-width:380px;margin-bottom:32px;line-height:1.6;">
+                The page you are looking for does not exist or has been moved.
+            </p>
+            <a href="' . htmlspecialchars($homeLink) . '" style="
+                background:linear-gradient(135deg,#3498db,#2e86c1);
+                color:#fff;
+                font-weight:600;
+                padding:12px 30px;
+                border-radius:10px;
+                text-decoration:none;
+                font-size:0.92rem;
+                transition:opacity 0.2s;
+            ">Go to Home</a>
+        </div>';
         require_once VIEW_PATH . 'shared/footer.php';
         break;
 }
