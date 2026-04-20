@@ -77,9 +77,31 @@ class DashboardController {
             return in_array($userRole, $module['roles']);
         }));
 
+        // Admin analytics
+        $analyticsData = null;
+        if ($userRole === 'admin') {
+            try {
+                if (!class_exists('AdminAnalyticsModel')) {
+                    require_once MODEL_PATH . 'AdminAnalyticsModel.php';
+                }
+                $analyticsData = [
+                    'overview'         => AdminAnalyticsModel::getOverviewStats(),
+                    'monthly'          => AdminAnalyticsModel::getMonthlyActivity(),
+                    'user_roles'       => AdminAnalyticsModel::getUserRoleBreakdown(),
+                    'alert_severity'   => AdminAnalyticsModel::getAlertSeverityBreakdown(),
+                    'request_status'   => AdminAnalyticsModel::getRequestStatusBreakdown(),
+                    'request_priority' => AdminAnalyticsModel::getRequestPriorityBreakdown(),
+                    'centers'          => AdminAnalyticsModel::getCenterCapacityData(),
+                    'recent_requests'  => AdminAnalyticsModel::getRecentRequests(),
+                ];
+            } catch (Exception $e) {
+                $analyticsData = null;
+            }
+        }
+
         $pageTitle  = 'Dashboard - SafeHaven';
         $activePage = 'dashboard';
-        $extraCss   = ['assets/css/Dashboard.css'];
+        $extraCss   = ['assets/css/Dashboard.css', 'assets/css/AdminAnalytics.css'];
         $extraJs    = [];
 
         require_once VIEW_PATH . 'shared/dashboard-header.php';

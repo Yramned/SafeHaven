@@ -49,7 +49,14 @@ class AuthController {
         $email    = trim($_POST['email']    ?? '');
         $password = trim($_POST['password'] ?? '');
 
-        $user = UserModel::authenticate($email, $password);
+        try {
+            $user = UserModel::authenticate($email, $password);
+        } catch (Exception $e) {
+            error_log('[AuthController] Login error: ' . $e->getMessage());
+            $_SESSION['error'] = 'A server error occurred. Please try again later.';
+            header('Location: ' . BASE_URL . 'index.php?page=login');
+            exit;
+        }
 
         if ($user) {
             $_SESSION['user_id']      = $user['id'];
@@ -101,14 +108,19 @@ class AuthController {
         // Ensure family_numbers column exists (safe auto-migration)
         UserModel::ensureSchema();
 
-        $user = UserModel::create([
-            'full_name'    => $fullName,
-            'email'        => $email,
-            'phone_number' => $phone,
-            'address'      => $address,
-            'password'     => $password,
-            'role'         => $role,
-        ]);
+        try {
+            $user = UserModel::create([
+                'full_name'    => $fullName,
+                'email'        => $email,
+                'phone_number' => $phone,
+                'address'      => $address,
+                'password'     => $password,
+                'role'         => $role,
+            ]);
+        } catch (Exception $e) {
+            error_log('[AuthController] Register error: ' . $e->getMessage());
+            $user = false;
+        }
 
         if ($user) {
             $_SESSION['success'] = 'Registration successful! Please login.';
