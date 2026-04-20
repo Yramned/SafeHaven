@@ -7,6 +7,179 @@
  * Authorization: Admin only
  */
 
+
+// FPDF must be loaded before DrrmReport is declared (class extends FPDF at file scope)
+require_once dirname(__DIR__) . '/lib/fpdf/fpdf.php';
+
+// ─── DrrmReport: FPDF subclass (must be at file scope) ────────────────────────
+class DrrmReport extends FPDF {
+
+    public $reportTitle = 'SITUATIONAL / INCIDENT REPORT';
+    public $generatedAt = '';
+    public $reportRefNo = '';
+    public $logoPath    = '';
+    public $hasLogo     = false;
+
+    // Color palette
+    private $colorNavy   = [13,  71, 161];
+    private $colorBlue   = [21, 101, 192];
+    private $colorLight  = [227, 242, 253];
+    private $colorWhite  = [255, 255, 255];
+    private $colorGray   = [245, 245, 245];
+    private $colorText   = [33,  33,  33];
+    private $colorMuted  = [100, 100, 100];
+    private $colorBorder = [189, 189, 189];
+
+    function Header() {
+        // Navy banner
+        $this->SetFillColor(...$this->colorNavy);
+        $this->Rect(0, 0, 210, 30, 'F');
+
+        // Amber left accent
+        $this->SetFillColor(255, 193, 7);
+        $this->Rect(0, 0, 6, 30, 'F');
+
+        // Logo image (if available)
+        if ($this->hasLogo && $this->logoPath) {
+            try {
+                $this->Image($this->logoPath, 8, 4, 20, 20);
+                $textX = 30;
+            } catch (Exception $e) {
+                $textX = 10;
+            }
+        } else {
+            // Fallback shield icon drawn as text symbol
+            $this->SetFont('Arial', 'B', 18);
+            $this->SetTextColor(255, 193, 7);
+            $this->SetXY(8, 5);
+            $this->Cell(20, 18, chr(164), 0, 0, 'C');
+            $textX = 30;
+        }
+
+        // Organisation + title
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFont('Arial', 'B', 14);
+        $this->SetXY($textX, 4);
+        $this->Cell(0, 7, 'SAFEHAVEN EMERGENCY EVACUATION SYSTEM', 0, 1, 'L');
+
+        $this->SetFont('Arial', '', 8.5);
+        $this->SetX($textX);
+        $this->Cell(0, 5, 'Disaster Risk Reduction and Management Office  |  Cebu City, Philippines', 0, 1, 'L');
+
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetX($textX);
+        $this->Cell(0, 6, strtoupper($this->reportTitle), 0, 1, 'L');
+
+        // Ref + date top-right
+        $this->SetFont('Arial', '', 7.5);
+        $this->SetXY(130, 5);
+        $this->Cell(70, 4, 'Ref No: ' . $this->reportRefNo, 0, 1, 'R');
+        $this->SetX(130);
+        $this->Cell(70, 4, 'Generated: ' . $this->generatedAt, 0, 1, 'R');
+
+        $this->SetTextColor(...$this->colorText);
+        $this->SetY(34);
+    }
+
+    function Footer() {
+        $this->SetY(-14);
+        $this->SetFillColor(...$this->colorNavy);
+        $this->Rect(0, $this->GetY(), 210, 14, 'F');
+
+        $this->SetFont('Arial', '', 7.5);
+        $this->SetTextColor(200, 200, 200);
+        $this->SetX(6);
+        $this->Cell(100, 14, 'SafeHaven  |  DRRM Office  |  CONFIDENTIAL - FOR OFFICIAL USE ONLY', 0, 0, 'L');
+        $this->Cell(95, 14, 'Page ' . $this->PageNo() . ' of {nb}', 0, 0, 'R');
+        $this->SetTextColor(...$this->colorText);
+    }
+
+    function SectionHeader($title, $subtitle = '') {
+        $this->Ln(4);
+        $this->SetFillColor(...$this->colorBlue);
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFont('Arial', 'B', 9.5);
+        $this->SetX(6);
+        $this->Cell(198, 7, '  ' . strtoupper($title), 0, 1, 'L', true);
+        if ($subtitle) {
+            $this->SetFillColor(...$this->colorLight);
+            $this->SetTextColor(...$this->colorMuted);
+            $this->SetFont('Arial', 'I', 8);
+            $this->SetX(6);
+            $this->Cell(198, 5, '  ' . $subtitle, 0, 1, 'L', true);
+        }
+        $this->SetTextColor(...$this->colorText);
+        $this->Ln(1);
+    }
+
+    function StatBox($x, $y, $w, $h, $label, $value, $sub, $fillR, $fillG, $fillB) {
+        $this->SetXY($x, $y);
+        $this->SetFillColor($fillR, $fillG, $fillB);
+        $this->SetDrawColor(...$this->colorBorder);
+        $this->RoundedRect($x, $y, $w, $h, 2, 'FD');
+
+        $this->SetFont('Arial', '', 7.5);
+        $this->SetTextColor(80, 80, 80);
+        $this->SetXY($x + 2, $y + 2);
+        $this->Cell($w - 4, 5, strtoupper($label), 0, 1, 'C');
+
+        $this->SetFont('Arial', 'B', 18);
+        $this->SetTextColor(...$this->colorNavy);
+        $this->SetX($x + 2);
+        $this->Cell($w - 4, 11, $value, 0, 1, 'C');
+
+        $this->SetFont('Arial', '', 7);
+        $this->SetTextColor(100, 100, 100);
+        $this->SetX($x + 2);
+        $this->Cell($w - 4, 4, $sub, 0, 1, 'C');
+
+        $this->SetTextColor(...$this->colorText);
+        $this->SetDrawColor(0, 0, 0);
+    }
+
+    function RoundedRect($x, $y, $w, $h, $r, $style = '') {
+        $k  = $this->k;
+        $hp = $this->h;
+        if ($style == 'F') $op = 'f';
+        elseif ($style == 'FD' || $style == 'DF') $op = 'B';
+        else $op = 'S';
+        $MyArc = 4 / 3 * (sqrt(2) - 1);
+        $this->_out(sprintf('%.2F %.2F m', ($x + $r) * $k, ($hp - $y) * $k));
+        $xc = $x + $w - $r; $yc = $y + $r;
+        $this->_out(sprintf('%.2F %.2F l', $xc * $k, ($hp - $y) * $k));
+        $this->_Arc($xc + $r * $MyArc, $yc - $r, $xc + $r, $yc - $r * $MyArc, $xc + $r, $yc);
+        $xc = $x + $w - $r; $yc = $y + $h - $r;
+        $this->_out(sprintf('%.2F %.2F l', ($x + $w) * $k, ($hp - $yc) * $k));
+        $this->_Arc($xc + $r, $yc + $r * $MyArc, $xc + $r * $MyArc, $yc + $r, $xc, $yc + $r);
+        $xc = $x + $r; $yc = $y + $h - $r;
+        $this->_out(sprintf('%.2F %.2F l', $xc * $k, ($hp - ($y + $h)) * $k));
+        $this->_Arc($xc - $r * $MyArc, $yc + $r, $xc - $r, $yc + $r * $MyArc, $xc - $r, $yc);
+        $xc = $x + $r; $yc = $y + $r;
+        $this->_out(sprintf('%.2F %.2F l', ($x) * $k, ($hp - $yc) * $k));
+        $this->_Arc($xc - $r, $yc - $r * $MyArc, $xc - $r * $MyArc, $yc - $r, $xc, $yc - $r);
+        $this->_out($op);
+    }
+
+    function _Arc($x1, $y1, $x2, $y2, $x3, $y3) {
+        $h = $this->h;
+        $this->_out(sprintf(
+            '%.2F %.2F %.2F %.2F %.2F %.2F c',
+            $x1 * $this->k, ($h - $y1) * $this->k,
+            $x2 * $this->k, ($h - $y2) * $this->k,
+            $x3 * $this->k, ($h - $y3) * $this->k
+        ));
+    }
+
+    function Divider() {
+        $this->Ln(2);
+        $this->SetDrawColor(...$this->colorBorder);
+        $this->SetLineWidth(0.3);
+        $this->Line(6, $this->GetY(), 204, $this->GetY());
+        $this->SetLineWidth(0.2);
+        $this->Ln(2);
+    }
+}
+
 class ReportController {
 
     /**
@@ -25,7 +198,7 @@ class ReportController {
         require_once MODEL_PATH . 'EvacuationCenterModel.php';
         require_once MODEL_PATH . 'EvacuationModel.php';
         require_once MODEL_PATH . 'AlertModel.php';
-        require_once ROOT_PATH . 'lib/fpdf/fpdf.php';
+        // fpdf.php already loaded at file scope above
 
         // ─── Fetch Data ──────────────────────────────────────────────────────
         try {
@@ -81,173 +254,7 @@ class ReportController {
         $hasLogo  = file_exists($logoPath);
 
         // ─── Custom FPDF class ───────────────────────────────────────────────
-        class DrrmReport extends FPDF {
-
-            public $reportTitle = 'SITUATIONAL / INCIDENT REPORT';
-            public $generatedAt = '';
-            public $reportRefNo = '';
-            public $logoPath    = '';
-            public $hasLogo     = false;
-
-            // Color palette
-            private $colorNavy   = [13,  71, 161];
-            private $colorBlue   = [21, 101, 192];
-            private $colorLight  = [227, 242, 253];
-            private $colorWhite  = [255, 255, 255];
-            private $colorGray   = [245, 245, 245];
-            private $colorText   = [33,  33,  33];
-            private $colorMuted  = [100, 100, 100];
-            private $colorBorder = [189, 189, 189];
-
-            function Header() {
-                // Navy banner
-                $this->SetFillColor(...$this->colorNavy);
-                $this->Rect(0, 0, 210, 30, 'F');
-
-                // Amber left accent
-                $this->SetFillColor(255, 193, 7);
-                $this->Rect(0, 0, 6, 30, 'F');
-
-                // Logo image (if available)
-                if ($this->hasLogo && $this->logoPath) {
-                    try {
-                        $this->Image($this->logoPath, 8, 4, 20, 20);
-                        $textX = 30;
-                    } catch (Exception $e) {
-                        $textX = 10;
-                    }
-                } else {
-                    // Fallback shield icon drawn as text symbol
-                    $this->SetFont('Arial', 'B', 18);
-                    $this->SetTextColor(255, 193, 7);
-                    $this->SetXY(8, 5);
-                    $this->Cell(20, 18, chr(164), 0, 0, 'C');
-                    $textX = 30;
-                }
-
-                // Organisation + title
-                $this->SetTextColor(255, 255, 255);
-                $this->SetFont('Arial', 'B', 14);
-                $this->SetXY($textX, 4);
-                $this->Cell(0, 7, 'SAFEHAVEN EMERGENCY EVACUATION SYSTEM', 0, 1, 'L');
-
-                $this->SetFont('Arial', '', 8.5);
-                $this->SetX($textX);
-                $this->Cell(0, 5, 'Disaster Risk Reduction and Management Office  |  Cebu City, Philippines', 0, 1, 'L');
-
-                $this->SetFont('Arial', 'B', 10);
-                $this->SetX($textX);
-                $this->Cell(0, 6, strtoupper($this->reportTitle), 0, 1, 'L');
-
-                // Ref + date top-right
-                $this->SetFont('Arial', '', 7.5);
-                $this->SetXY(130, 5);
-                $this->Cell(70, 4, 'Ref No: ' . $this->reportRefNo, 0, 1, 'R');
-                $this->SetX(130);
-                $this->Cell(70, 4, 'Generated: ' . $this->generatedAt, 0, 1, 'R');
-
-                $this->SetTextColor(...$this->colorText);
-                $this->SetY(34);
-            }
-
-            function Footer() {
-                $this->SetY(-14);
-                $this->SetFillColor(...$this->colorNavy);
-                $this->Rect(0, $this->GetY(), 210, 14, 'F');
-
-                $this->SetFont('Arial', '', 7.5);
-                $this->SetTextColor(200, 200, 200);
-                $this->SetX(6);
-                $this->Cell(100, 14, 'SafeHaven  |  DRRM Office  |  CONFIDENTIAL - FOR OFFICIAL USE ONLY', 0, 0, 'L');
-                $this->Cell(95, 14, 'Page ' . $this->PageNo() . ' of {nb}', 0, 0, 'R');
-                $this->SetTextColor(...$this->colorText);
-            }
-
-            function SectionHeader($title, $subtitle = '') {
-                $this->Ln(4);
-                $this->SetFillColor(...$this->colorBlue);
-                $this->SetTextColor(255, 255, 255);
-                $this->SetFont('Arial', 'B', 9.5);
-                $this->SetX(6);
-                $this->Cell(198, 7, '  ' . strtoupper($title), 0, 1, 'L', true);
-                if ($subtitle) {
-                    $this->SetFillColor(...$this->colorLight);
-                    $this->SetTextColor(...$this->colorMuted);
-                    $this->SetFont('Arial', 'I', 8);
-                    $this->SetX(6);
-                    $this->Cell(198, 5, '  ' . $subtitle, 0, 1, 'L', true);
-                }
-                $this->SetTextColor(...$this->colorText);
-                $this->Ln(1);
-            }
-
-            function StatBox($x, $y, $w, $h, $label, $value, $sub, $fillR, $fillG, $fillB) {
-                $this->SetXY($x, $y);
-                $this->SetFillColor($fillR, $fillG, $fillB);
-                $this->SetDrawColor(...$this->colorBorder);
-                $this->RoundedRect($x, $y, $w, $h, 2, 'FD');
-
-                $this->SetFont('Arial', '', 7.5);
-                $this->SetTextColor(80, 80, 80);
-                $this->SetXY($x + 2, $y + 2);
-                $this->Cell($w - 4, 5, strtoupper($label), 0, 1, 'C');
-
-                $this->SetFont('Arial', 'B', 18);
-                $this->SetTextColor(...$this->colorNavy);
-                $this->SetX($x + 2);
-                $this->Cell($w - 4, 11, $value, 0, 1, 'C');
-
-                $this->SetFont('Arial', '', 7);
-                $this->SetTextColor(100, 100, 100);
-                $this->SetX($x + 2);
-                $this->Cell($w - 4, 4, $sub, 0, 1, 'C');
-
-                $this->SetTextColor(...$this->colorText);
-                $this->SetDrawColor(0, 0, 0);
-            }
-
-            function RoundedRect($x, $y, $w, $h, $r, $style = '') {
-                $k  = $this->k;
-                $hp = $this->h;
-                if ($style == 'F') $op = 'f';
-                elseif ($style == 'FD' || $style == 'DF') $op = 'B';
-                else $op = 'S';
-                $MyArc = 4 / 3 * (sqrt(2) - 1);
-                $this->_out(sprintf('%.2F %.2F m', ($x + $r) * $k, ($hp - $y) * $k));
-                $xc = $x + $w - $r; $yc = $y + $r;
-                $this->_out(sprintf('%.2F %.2F l', $xc * $k, ($hp - $y) * $k));
-                $this->_Arc($xc + $r * $MyArc, $yc - $r, $xc + $r, $yc - $r * $MyArc, $xc + $r, $yc);
-                $xc = $x + $w - $r; $yc = $y + $h - $r;
-                $this->_out(sprintf('%.2F %.2F l', ($x + $w) * $k, ($hp - $yc) * $k));
-                $this->_Arc($xc + $r, $yc + $r * $MyArc, $xc + $r * $MyArc, $yc + $r, $xc, $yc + $r);
-                $xc = $x + $r; $yc = $y + $h - $r;
-                $this->_out(sprintf('%.2F %.2F l', $xc * $k, ($hp - ($y + $h)) * $k));
-                $this->_Arc($xc - $r * $MyArc, $yc + $r, $xc - $r, $yc + $r * $MyArc, $xc - $r, $yc);
-                $xc = $x + $r; $yc = $y + $r;
-                $this->_out(sprintf('%.2F %.2F l', ($x) * $k, ($hp - $yc) * $k));
-                $this->_Arc($xc - $r, $yc - $r * $MyArc, $xc - $r * $MyArc, $yc - $r, $xc, $yc - $r);
-                $this->_out($op);
-            }
-
-            function _Arc($x1, $y1, $x2, $y2, $x3, $y3) {
-                $h = $this->h;
-                $this->_out(sprintf(
-                    '%.2F %.2F %.2F %.2F %.2F %.2F c',
-                    $x1 * $this->k, ($h - $y1) * $this->k,
-                    $x2 * $this->k, ($h - $y2) * $this->k,
-                    $x3 * $this->k, ($h - $y3) * $this->k
-                ));
-            }
-
-            function Divider() {
-                $this->Ln(2);
-                $this->SetDrawColor(...$this->colorBorder);
-                $this->SetLineWidth(0.3);
-                $this->Line(6, $this->GetY(), 204, $this->GetY());
-                $this->SetLineWidth(0.2);
-                $this->Ln(2);
-            }
-        }
+        // DrrmReport class is declared at file scope below (PHP forbids class declarations inside functions)
 
         // ─── Build PDF ───────────────────────────────────────────────────────
         $pdf = new DrrmReport('P', 'mm', 'A4');
